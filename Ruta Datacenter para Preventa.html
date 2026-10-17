@@ -1,0 +1,1785 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Ruta Datacenter para Preventa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: índice lateral fijo + columna de lectura; diagramas y tablas más anchos que el texto. Paleta inspirada en el cableado del centro de datos: fibra OM3 (verde azulado), fabric A (azul), fabric B (ámbar), Ethernet (verde oliva). */
+:root{
+  --bg:#F3F5F6; --paper:#FFFFFF; --panel:#EEF2F4; --ink:#15212B; --muted:#56636F;
+  --line:#C5CED6; --line-strong:#6A7784;
+  --acc:#0B7480; --acc-soft:#DCEFF1;
+  --fa:#2754A3; --fa-soft:#E2EAF7;
+  --fb:#AD5A06; --fb-soft:#FAEBD9;
+  --eth:#55791B; --eth-soft:#E9F1DA;
+  --bad:#A3302A; --bad-soft:#F8E3E1;
+  --f-disp:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1419; --paper:#151D24; --panel:#1B252E; --ink:#E2E8ED; --muted:#9AA7B2;
+  --line:#2F3C48; --line-strong:#8A99A7;
+  --acc:#4CC0CA; --acc-soft:#123539;
+  --fa:#86A9EE; --fa-soft:#1A2944;
+  --fb:#F0A24E; --fb-soft:#3A2814;
+  --eth:#A6C76B; --eth-soft:#232F18;
+  --bad:#F08A80; --bad-soft:#3A1C1A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1419; --paper:#151D24; --panel:#1B252E; --ink:#E2E8ED; --muted:#9AA7B2;
+  --line:#2F3C48; --line-strong:#8A99A7;
+  --acc:#4CC0CA; --acc-soft:#123539;
+  --fa:#86A9EE; --fa-soft:#1A2944;
+  --fb:#F0A24E; --fb-soft:#3A2814;
+  --eth:#A6C76B; --eth-soft:#232F18;
+  --bad:#F08A80; --bad-soft:#3A1C1A; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.62;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--acc);text-underline-offset:2px}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:2px}
+.shell{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:40px;padding-block:28px 64px}
+@media (min-width:1120px){.shell{grid-template-columns:232px minmax(0,1fr)}}
+aside.toc{display:none}
+@media (min-width:1120px){aside.toc{display:block;position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;max-height:calc(100vh - 40px);overflow:auto;font-size:13.5px;line-height:1.4}}
+.toc h2{font-family:var(--f-disp);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.toc a{display:block;padding:6px 10px;border-radius:6px;color:var(--ink);text-decoration:none;border-left:2px solid transparent}
+.toc a:hover{background:var(--panel)}
+.toc a small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:11px}
+main{min-width:0}
+.prose{max-width:780px}
+header.top{padding-block:8px 28px;border-bottom:1px solid var(--line);margin-bottom:28px}
+.kicker{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--acc)}
+h1{font-family:var(--f-disp);font-weight:700;font-size:clamp(34px,5vw,52px);line-height:1.05;margin:10px 0 14px;text-wrap:balance;letter-spacing:-.01em}
+.lede{font-size:18px;color:var(--muted);max-width:720px;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:18px;font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+h2{font-family:var(--f-disp);font-weight:700;font-size:clamp(26px,3.4vw,34px);line-height:1.15;margin:0 0 6px;text-wrap:balance}
+h3{font-family:var(--f-disp);font-weight:600;font-size:21px;line-height:1.25;margin:36px 0 10px;text-wrap:balance}
+h4{font-family:var(--f-body);font-weight:600;font-size:16px;margin:22px 0 6px}
+section.area{padding-block:44px 20px;border-top:2px solid var(--ink);margin-top:36px}
+section.area:first-of-type{margin-top:0}
+.eyebrow{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-family:var(--f-mono);font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.eyebrow b{color:var(--acc);font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px;padding-left:22px}
+li{margin:4px 0}
+li::marker{color:var(--muted)}
+code,.mono{font-family:var(--f-mono);font-size:.9em}
+code{background:var(--panel);padding:1px 5px;border-radius:4px}
+abbr{text-decoration:none;border-bottom:1px dotted var(--line-strong);cursor:help}
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:18px 0 8px}
+.plan > div{background:var(--paper);padding:14px 16px;min-width:0}
+.plan h4{margin:0 0 6px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.plan ul{margin:0;padding-left:18px;font-size:14.5px}
+.plan p{margin:0;font-size:14.5px}
+.obj{background:var(--acc-soft);border-radius:10px;padding:14px 18px;margin:18px 0}
+.obj h4{margin:0 0 6px;font-size:13px;font-family:var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--acc);font-weight:500}
+.obj ol{margin:0}
+.note{border-left:3px solid var(--fb);background:var(--fb-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:16px 0;font-size:15px}
+.note b{color:var(--fb)}
+.analogy{border-left:3px solid var(--acc);padding:6px 14px;margin:14px 0;font-size:15.5px;color:var(--ink)}
+.analogy b{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);display:block}
+.formula{font-family:var(--f-mono);font-size:14px;background:var(--panel);border-radius:8px;padding:12px 14px;margin:12px 0 16px;overflow-x:auto;white-space:pre;line-height:1.55}
+.tbl{overflow-x:auto;margin:16px 0 22px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-weight:500;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--panel)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f-mono);font-size:13.5px}
+.tcap{font-size:13px;color:var(--muted);margin:-14px 0 20px}
+figure.dg{margin:26px 0 28px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 16px 12px}
+.fig-t{font-family:var(--f-disp);font-weight:600;font-size:16px;margin:0 0 10px}
+.fig-t span{font-family:var(--f-mono);font-weight:400;font-size:12px;color:var(--acc);margin-right:8px;letter-spacing:.04em}
+.svgwrap{overflow-x:auto}
+.svgwrap svg{display:block;width:100%;min-width:660px;height:auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:10px;max-width:760px}
+/* Estilos de diagramas */
+svg.d text{fill:var(--ink);font-family:var(--f-body);font-size:13px}
+svg.d .c{text-anchor:middle}
+svg.d .e{text-anchor:end}
+svg.d .s{font-size:11.5px;fill:var(--muted)}
+svg.d .m{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+svg.d .h{font-weight:600}
+svg.d .t{font-family:var(--f-disp);font-weight:600;font-size:14px}
+svg.d .halo{paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round}
+svg.d .b{fill:var(--panel);stroke:var(--line-strong);stroke-width:1.3}
+svg.d .bw{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.3}
+svg.d .frame{fill:none;stroke:var(--line-strong);stroke-width:1.3;stroke-dasharray:6 4}
+svg.d .ba{fill:var(--acc-soft);stroke:var(--acc);stroke-width:1.5}
+svg.d .bA{fill:var(--fa-soft);stroke:var(--fa);stroke-width:1.5}
+svg.d .bB{fill:var(--fb-soft);stroke:var(--fb);stroke-width:1.5}
+svg.d .bE{fill:var(--eth-soft);stroke:var(--eth);stroke-width:1.5}
+svg.d .bX{fill:var(--bad-soft);stroke:var(--bad);stroke-width:1.5}
+svg.d .ln{stroke:var(--line-strong);stroke-width:1.6;fill:none}
+svg.d .lA{stroke:var(--fa);stroke-width:2.2;fill:none}
+svg.d .lB{stroke:var(--fb);stroke-width:2.2;fill:none}
+svg.d .lE{stroke:var(--eth);stroke-width:2.2;fill:none}
+svg.d .la{stroke:var(--acc);stroke-width:2.2;fill:none}
+svg.d .dash{stroke-dasharray:5 4}
+svg.d .life{stroke:var(--line);stroke-width:1.4;stroke-dasharray:4 4;fill:none}
+svg.d .ah{fill:var(--line-strong)}
+svg.d .tA{fill:var(--fa)} svg.d .tB{fill:var(--fb)} svg.d .tE{fill:var(--eth)} svg.d .ta{fill:var(--acc)} svg.d .tX{fill:var(--bad)}
+svg.d .dot{fill:var(--line-strong)}
+/* Autoevaluación */
+.quiz ol{padding-left:24px}
+details.ans{margin:12px 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+details.ans summary{cursor:pointer;padding:10px 14px;font-weight:600;font-size:14.5px}
+details.ans > div{padding:2px 16px 12px;font-size:15px}
+.reads li{margin:6px 0}
+.reads .src{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-right:6px}
+.cal td:first-child{white-space:nowrap;font-family:var(--f-mono);font-size:13px}
+dl.glos{display:grid;grid-template-columns:minmax(110px,180px) minmax(0,1fr);gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--paper);font-size:14.5px}
+dl.glos dt,dl.glos dd{margin:0;padding:8px 12px;border-bottom:1px solid var(--line)}
+dl.glos dt{font-family:var(--f-mono);font-size:13px;font-weight:500;background:var(--panel)}
+@media (max-width:520px){dl.glos{grid-template-columns:1fr}dl.glos dt{border-bottom:0;padding-bottom:2px}}
+ol.refs{padding-left:0;list-style:none}
+ol.refs li{padding-left:2em;text-indent:-2em;margin:0 0 10px;font-size:14.5px;overflow-wrap:anywhere}
+.mtoc{border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:12px 16px;margin:0 0 8px}
+@media (min-width:1120px){.mtoc{display:none}}
+.mtoc summary{cursor:pointer;font-weight:600}
+.mtoc ol{margin:8px 0 0}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:11px;padding:1px 7px;border-radius:99px;background:var(--panel);color:var(--muted);border:1px solid var(--line);vertical-align:2px}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--line-strong)"/></marker>
+    <marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--fa)"/></marker>
+    <marker id="arB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--fb)"/></marker>
+    <marker id="arE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--eth)"/></marker>
+    <marker id="ara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--acc)"/></marker>
+  </defs>
+</svg>
+
+<div class="shell">
+<aside class="toc" aria-label="Índice">
+  <h2>Contenido</h2>
+  <ol>
+    <li><a href="#inicio">Cómo usar la guía<small>Mapa y calendario</small></a></li>
+    <li><a href="#s1">Servidores y virtualización<small>Semana 1 · 19–25 oct</small></a></li>
+    <li><a href="#s2">Redes LAN/IP<small>Semana 2 · 26 oct–1 nov</small></a></li>
+    <li><a href="#s3">Storage<small>Semana 3 · 2–8 nov</small></a></li>
+    <li><a href="#s4">Redes SAN<small>Semana 4 · 9–15 nov</small></a></li>
+    <li><a href="#s5">Aplicaciones y sizing<small>Semana 5 · 16–22 nov</small></a></li>
+    <li><a href="#s6">Caso integrador<small>Semana 6 · 23–29 nov</small></a></li>
+    <li><a href="#glosario">Glosario<small>Términos y siglas</small></a></li>
+    <li><a href="#referencias">Referencias<small>APA 7</small></a></li>
+  </ol>
+</aside>
+
+<main>
+<header class="top">
+  <div class="kicker">Guía de estudio · Preventa de infraestructura IBM</div>
+  <h1>Ruta Datacenter para Preventa</h1>
+  <p class="lede">Servidores, redes LAN/IP, almacenamiento, redes SAN y aplicaciones: qué son, cómo se conectan y cómo se convierten en un dimensionamiento defendible ante el cliente.</p>
+  <div class="meta"><span>6 semanas · 19 oct – 29 nov 2026</span><span>5–7 h por semana</span><span>Nivel: principiante → intermedio</span><span>14 diagramas</span></div>
+</header>
+
+<details class="mtoc"><summary>Contenido</summary>
+  <ol>
+    <li><a href="#inicio">Cómo usar la guía</a></li>
+    <li><a href="#s1">Semana 1 · Servidores y virtualización</a></li>
+    <li><a href="#s2">Semana 2 · Redes LAN/IP</a></li>
+    <li><a href="#s3">Semana 3 · Storage</a></li>
+    <li><a href="#s4">Semana 4 · Redes SAN</a></li>
+    <li><a href="#s5">Semana 5 · Aplicaciones y sizing</a></li>
+    <li><a href="#s6">Semana 6 · Caso integrador</a></li>
+    <li><a href="#glosario">Glosario</a></li>
+    <li><a href="#referencias">Referencias</a></li>
+  </ol>
+</details>
+
+<section class="area" id="inicio">
+  <div class="eyebrow"><b>Punto de partida</b><span>Lectura previa · 30 min</span></div>
+  <h2>Cómo usar la guía</h2>
+  <div class="prose">
+    <p>La guía avanza en el mismo orden en que viaja una petición dentro de un centro de datos: primero el servidor que ejecuta la aplicación, después la red que lo conecta con los usuarios, luego el almacenamiento donde viven los datos y la red SAN que une servidor y almacenamiento. La semana 5 junta las piezas desde el punto de vista de la aplicación, que es la que genera la demanda, y la semana 6 la aplica a un caso completo.</p>
+    <p>Cada área tiene la misma estructura: objetivos, conceptos clave, diagramas, tablas comparativas, aplicación en preventa, autoevaluación con respuestas y lecturas oficiales. Las siglas se explican la primera vez que aparecen; si después olvidas alguna, está en el <a href="#glosario">glosario</a>.</p>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 0</span>Las cinco áreas en una sola petición</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 270" role="img" aria-label="Flujo de usuario a red LAN, servidor, red SAN y almacenamiento">
+      <rect class="bw" x="10" y="105" width="120" height="60" rx="8"/>
+      <text class="c h" x="70" y="131">Usuario</text><text class="c s" x="70" y="149">navegador / app</text>
+      <rect class="bE" x="170" y="105" width="140" height="60" rx="8"/>
+      <text class="c h" x="240" y="131">Red LAN/IP</text><text class="c s" x="240" y="149">Área 2</text>
+      <rect class="frame" x="350" y="30" width="210" height="210" rx="10"/>
+      <text class="c t" x="455" y="54">Servidor</text>
+      <rect class="ba" x="365" y="68" width="180" height="42" rx="6"/><text class="c" x="455" y="94">Aplicación · Área 5</text>
+      <rect class="b" x="365" y="118" width="180" height="42" rx="6"/><text class="c" x="455" y="144">SO + hipervisor · Área 1</text>
+      <rect class="b" x="365" y="168" width="180" height="42" rx="6"/><text class="c" x="455" y="194">CPU · memoria · E/S · Área 1</text>
+      <text class="c s" x="455" y="230">NIC hacia LAN · HBA hacia SAN</text>
+      <rect class="bA" x="600" y="105" width="120" height="60" rx="8"/>
+      <text class="c h" x="660" y="131">Red SAN</text><text class="c s" x="660" y="149">Área 4</text>
+      <rect class="bB" x="755" y="90" width="115" height="90" rx="8"/>
+      <text class="c h" x="812" y="124">Storage</text><text class="c s" x="812" y="142">Área 3</text><text class="c s" x="812" y="160">discos / flash</text>
+      <line class="lE" x1="130" y1="135" x2="166" y2="135" marker-end="url(#arE)"/>
+      <line class="lE" x1="310" y1="135" x2="346" y2="135" marker-end="url(#arE)"/>
+      <line class="lA" x1="560" y1="135" x2="596" y2="135" marker-end="url(#arA)"/>
+      <line class="lA" x1="720" y1="135" x2="751" y2="135" marker-end="url(#arA)"/>
+      <text class="c m" x="240" y="90">TCP/IP · Ethernet</text>
+      <text class="c m" x="660" y="94">FC · iSCSI · NVMe-oF</text>
+    </svg>
+    </div>
+    <figcaption>Una consulta del usuario cruza la LAN, consume CPU y memoria en el servidor y, si el dato no está en memoria, baja por la SAN hasta el almacenamiento. Cada área de la guía corresponde a un tramo de este recorrido.</figcaption>
+  </figure>
+
+  <h3>Calendario de estudio</h3>
+  <div class="tbl cal">
+    <table>
+      <thead><tr><th>Semana</th><th>Fechas (2026)</th><th>Área</th><th>Entregable de control</th><th class="num">Horas</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>lun 19 – dom 25 oct</td><td><a href="#s1">Servidores y virtualización</a></td><td>Ficha comparativa Power vs. x86 para un cliente ficticio</td><td class="num">6</td></tr>
+        <tr><td>2</td><td>lun 26 oct – dom 1 nov</td><td><a href="#s2">Fundamentos de redes LAN/IP</a></td><td>Plan de direccionamiento con 4 VLAN y subredes</td><td class="num">6–7</td></tr>
+        <tr><td>3</td><td>lun 2 – dom 8 nov</td><td><a href="#s3">Storage: tipos, RAID y rendimiento</a></td><td>Cálculo de capacidad útil e IOPS de back-end</td><td class="num">6–7</td></tr>
+        <tr><td>4</td><td>lun 9 – dom 15 nov</td><td><a href="#s4">Redes SAN</a></td><td>Diseño de fabric A/B con tabla de zonas</td><td class="num">6</td></tr>
+        <tr><td>5</td><td>lun 16 – dom 22 nov</td><td><a href="#s5">Aplicaciones y sizing</a></td><td>Hoja de levantamiento de requerimientos de una BD</td><td class="num">5–6</td></tr>
+        <tr><td>6</td><td>lun 23 – dom 29 nov</td><td><a href="#s6">Repaso y caso integrador</a></td><td>Propuesta técnica de una página con diagrama</td><td class="num">7</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+    <p>Reparto sugerido de cada semana: 2,5 h de lectura (guía + una lectura oficial), 1 h para redibujar a mano los diagramas de la semana sin mirar, 2 h de ejercicio práctico y 30 min para el entregable y la autoevaluación. Si una semana no alcanzas a terminar, recorta la lectura oficial, no el ejercicio: el ejercicio es lo que fija el concepto.</p>
+    <div class="note"><b>Convención de unidades.</b> En esta guía, 1 TB = 10<sup>12</sup> bytes y 1 TiB = 2<sup>40</sup> bytes (≈ 1,0995 TB). Los fabricantes de discos usan TB decimales; muchos sistemas operativos reportan en binario. La diferencia es de casi 10 % y es un error clásico al cerrar capacidades en una propuesta.</div>
+  </div>
+</section>
+
+<section class="area" id="s1">
+  <div class="eyebrow"><b>Semana 1</b><span>lun 19 – dom 25 oct 2026</span><span>Área 1</span></div>
+  <h2>Servidores y virtualización</h2>
+
+  <div class="plan">
+    <div><h4>Temas</h4><ul><li>CPU, memoria y E/S</li><li>Formatos: rack, blade, torre</li><li>Hipervisores y máquinas virtuales</li><li>IBM Power frente a x86</li></ul></div>
+    <div><h4>Actividades</h4><ul><li>Lectura: capítulo 1 de <em>IBM Power E1180: Introduction and Overview</em></li><li>Redibujar a mano: Fig. 1 y Fig. 2</li><li>Ejercicio: comparar la ficha técnica de un servidor Power y una x86 en núcleos, memoria máxima y ranuras PCIe</li></ul></div>
+    <div><h4>Entregable</h4><p>Ficha de una página: “¿Power o x86 para este cliente?”, con 5 criterios y una recomendación justificada para un ERP ficticio con 40 usuarios concurrentes.</p></div>
+  </div>
+
+  <div class="obj"><h4>Objetivos de aprendizaje</h4><ol>
+    <li>Identificar los componentes internos de un servidor y qué recurso aporta cada uno.</li>
+    <li>Distinguir núcleo, hilo y socket, y explicar por qué importan en licenciamiento y sizing.</li>
+    <li>Explicar qué hace un hipervisor y diferenciar tipo 1 y tipo 2.</li>
+    <li>Describir cómo PowerVM y el VIOS virtualizan la E/S en IBM Power.</li>
+    <li>Comparar IBM Power y x86 con criterios técnicos, no comerciales.</li>
+  </ol></div>
+
+  <h3>1.1 Arquitectura de un servidor</h3>
+  <div class="prose">
+    <p>Un servidor es una computadora diseñada para trabajar sin interrupción, atender a muchos usuarios a la vez y tolerar fallas de componentes. Tiene tres grupos de recursos que siempre vas a dimensionar:</p>
+    <ul>
+      <li><b>CPU</b> (<i>Central Processing Unit</i>, unidad central de procesamiento). Se instala en un <b>socket</b> de la tarjeta madre. Cada CPU contiene varios <b>núcleos</b> (<i>cores</i>), y cada núcleo puede ejecutar varios <b>hilos</b> (<i>threads</i>) simultáneos gracias a <abbr title="Simultaneous Multithreading">SMT</abbr> (<i>Simultaneous Multithreading</i>). El núcleo es la unidad que casi todos los fabricantes de software usan para licenciar.</li>
+      <li><b>Memoria</b> RAM (<i>Random Access Memory</i>). Se instala en módulos <b>DIMM</b> (<i>Dual Inline Memory Module</i>) conectados a la controladora de memoria de cada CPU por varios <b>canales</b>. Importan dos cosas: la capacidad (cuántos GB caben) y el ancho de banda (cuántos GB/s puede mover).</li>
+      <li><b>E/S</b> (entrada/salida). Los adaptadores se conectan por <b>PCIe</b> (<i>Peripheral Component Interconnect Express</i>). Ahí van la <b>NIC</b> (<i>Network Interface Card</i>, tarjeta de red Ethernet), la <b>HBA</b> (<i>Host Bus Adapter</i>, tarjeta Fibre Channel para la SAN), controladoras de disco, unidades NVMe y aceleradores.</li>
+    </ul>
+    <p>Además hay un <b>procesador de servicio</b> independiente que permite encender, apagar y diagnosticar el equipo aunque el sistema operativo esté caído. En x86 se llama <abbr title="Baseboard Management Controller">BMC</abbr> (<i>Baseboard Management Controller</i>); en IBM Power, según el modelo, es el <abbr title="Flexible Service Processor">FSP</abbr> o un eBMC, y los equipos se administran desde la <abbr title="Hardware Management Console">HMC</abbr> (<i>Hardware Management Console</i>).</p>
+    <div class="analogy"><b>Analogía</b>Piensa en la cocina de un restaurante. Los núcleos son los cocineros, la memoria es la mesa de trabajo donde tienen los ingredientes a la mano, el almacenamiento es la despensa y la E/S son las puertas por donde entran pedidos e insumos. Contratar más cocineros no sirve si la mesa es pequeña o si la puerta de la despensa es angosta.</div>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 1</span>Componentes internos de un servidor de dos sockets</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 380" role="img" aria-label="Diagrama de componentes internos de un servidor">
+      <rect class="frame" x="10" y="10" width="860" height="360" rx="12"/>
+      <text class="t" x="28" y="34">Chasis del servidor</text>
+      <rect class="bw" x="30" y="52" width="140" height="120" rx="6"/>
+      <text class="c h" x="100" y="76">Memoria 0</text>
+      <rect class="b" x="48" y="88" width="104" height="10"/><rect class="b" x="48" y="104" width="104" height="10"/><rect class="b" x="48" y="120" width="104" height="10"/><rect class="b" x="48" y="136" width="104" height="10"/>
+      <text class="c s" x="100" y="163">DIMM por canal</text>
+      <rect class="ba" x="200" y="52" width="200" height="120" rx="6"/>
+      <text class="c h" x="300" y="78">CPU 0 (socket 0)</text>
+      <text class="c s" x="300" y="100">núcleos + hilos SMT</text>
+      <text class="c s" x="300" y="118">caché L1 / L2 / L3</text>
+      <text class="c s" x="300" y="136">controladora de memoria</text>
+      <text class="c s" x="300" y="154">controladora PCIe</text>
+      <rect class="bw" x="30" y="212" width="140" height="120" rx="6"/>
+      <text class="c h" x="100" y="236">Memoria 1</text>
+      <rect class="b" x="48" y="248" width="104" height="10"/><rect class="b" x="48" y="264" width="104" height="10"/><rect class="b" x="48" y="280" width="104" height="10"/><rect class="b" x="48" y="296" width="104" height="10"/>
+      <text class="c s" x="100" y="323">DIMM por canal</text>
+      <rect class="ba" x="200" y="212" width="200" height="120" rx="6"/>
+      <text class="c h" x="300" y="238">CPU 1 (socket 1)</text>
+      <text class="c s" x="300" y="260">núcleos + hilos SMT</text>
+      <text class="c s" x="300" y="278">caché L1 / L2 / L3</text>
+      <text class="c s" x="300" y="296">controladora de memoria</text>
+      <text class="c s" x="300" y="314">controladora PCIe</text>
+      <line class="la" x1="170" y1="112" x2="200" y2="112"/><line class="la" x1="170" y1="124" x2="200" y2="124"/>
+      <line class="la" x1="170" y1="272" x2="200" y2="272"/><line class="la" x1="170" y1="284" x2="200" y2="284"/>
+      <line class="la" x1="300" y1="172" x2="300" y2="212"/>
+      <text class="e s halo" x="292" y="196">interconexión entre sockets</text>
+      <rect class="b" x="438" y="52" width="30" height="280" rx="4"/>
+      <text class="c s" transform="translate(457,192) rotate(-90)">carriles PCIe</text>
+      <line class="ln" x1="400" y1="112" x2="438" y2="112"/><line class="ln" x1="400" y1="272" x2="438" y2="272"/>
+      <rect class="bE" x="505" y="52" width="345" height="44" rx="6"/><text x="520" y="79">NIC Ethernet → LAN <tspan class="m">(p. ej., 2 × 25 GbE)</tspan></text>
+      <rect class="bA" x="505" y="106" width="345" height="44" rx="6"/><text x="520" y="133">HBA Fibre Channel → SAN <tspan class="m">(p. ej., 2 × 32GFC)</tspan></text>
+      <rect class="bw" x="505" y="160" width="345" height="44" rx="6"/><text x="520" y="187">NVMe / controladora local <tspan class="m">(arranque del SO)</tspan></text>
+      <rect class="bw" x="505" y="214" width="345" height="44" rx="6"/><text x="520" y="241">Acelerador / GPU <tspan class="m">(opcional)</tspan></text>
+      <rect class="bB" x="505" y="288" width="345" height="44" rx="6"/><text x="520" y="315">Procesador de servicio <tspan class="m">(BMC / FSP)</tspan></text>
+      <line class="ln" x1="468" y1="74" x2="505" y2="74"/><line class="ln" x1="468" y1="128" x2="505" y2="128"/><line class="ln" x1="468" y1="182" x2="505" y2="182"/><line class="ln" x1="468" y1="236" x2="505" y2="236"/>
+      <text class="s" x="28" y="358">Fuentes de poder redundantes y ventiladores (no se muestran)</text>
+      <text class="e s" x="850" y="358">El procesador de servicio tiene su propio puerto de gestión</text>
+    </svg>
+    </div>
+    <figcaption>Cada CPU tiene su propia memoria y sus propios carriles PCIe. Acceder a la memoria del otro socket pasa por la interconexión y es más lento: esto se llama NUMA y explica por qué conviene que una VM grande no quede repartida entre sockets.</figcaption>
+  </figure>
+
+  <div class="prose">
+    <h4>Conceptos que se derivan del diagrama</h4>
+    <ul>
+      <li><b>NUMA</b> (<i>Non-Uniform Memory Access</i>, acceso no uniforme a memoria): la memoria “local” de un socket se lee más rápido que la del otro. Los hipervisores intentan mantener cada VM dentro de un mismo nodo NUMA.</li>
+      <li><b>Caché</b>: memoria muy rápida dentro de la CPU. Las bases de datos se benefician mucho de cachés grandes porque evitan ir a la RAM.</li>
+      <li><b>Generación de PCIe</b>: cada generación duplica la velocidad por carril. Un adaptador de 64GFC o de 100 GbE necesita una ranura de generación y ancho suficientes; si no, la tarjeta no rinde lo que promete la ficha.</li>
+      <li><b>Hilos frente a núcleos</b>: un hilo SMT no equivale a un núcleo completo. Comparte las unidades de ejecución del núcleo. Sirve para aprovechar tiempos muertos, pero no duplica ni octuplica el rendimiento.</li>
+    </ul>
+  </div>
+
+  <h3>1.2 Formatos físicos</h3>
+  <div class="prose"><p>El formato define cuánto espacio, energía y cableado consume el equipo. En el centro de datos se mide en <b>unidades de rack</b> (U): 1U = 1,75 in = 44,45 mm de altura, en racks de 19 pulgadas de ancho.</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Formato</th><th>Cómo es</th><th>Ventajas</th><th>Limitaciones</th><th>Cuándo aparece en preventa</th></tr></thead>
+    <tbody>
+      <tr><td><b>Rack</b></td><td>Equipo de 1U a varios U que se atornilla a un rack estándar</td><td>Flexible, muchas ranuras PCIe y discos, estándar en todo centro de datos</td><td>Cada equipo lleva su propio cableado y fuentes</td><td>La mayoría de los casos: servidores Power y x86 escala media y alta</td></tr>
+      <tr><td><b>Blade</b></td><td>Servidores delgados que comparten un chasis con energía, ventilación y red integradas</td><td>Alta densidad, menos cables, gestión centralizada</td><td>Dependencia del chasis del fabricante; menos ranuras de expansión</td><td>Consolidación de muchos servidores x86 homogéneos</td></tr>
+      <tr><td><b>Torre</b></td><td>Gabinete vertical, similar a una PC grande</td><td>No requiere rack, silencioso, económico</td><td>Poca densidad, crecimiento limitado</td><td>Sucursales, oficinas pequeñas, laboratorios</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>1.3 Virtualización e hipervisores</h3>
+  <div class="prose">
+    <p>Virtualizar es ejecutar varios sistemas operativos aislados en el mismo hardware. El software que lo hace posible es el <b>hipervisor</b>: reparte CPU, memoria y E/S entre <b>máquinas virtuales</b> (VM), y cada VM cree que tiene su propio hardware (vCPU, vRAM, vNIC, discos virtuales).</p>
+    <ul>
+      <li><b>Hipervisor tipo 1</b> (<i>bare metal</i>): se instala directo sobre el hardware. Es el que se usa en producción: VMware ESXi, KVM (<i>Kernel-based Virtual Machine</i>), Microsoft Hyper-V y PowerVM en IBM Power.</li>
+      <li><b>Hipervisor tipo 2</b> (hospedado): corre como aplicación sobre un sistema operativo anfitrión. Útil para laboratorios, no para producción.</li>
+      <li><b>Sobresuscripción</b> (<i>overcommit</i>): asignar más vCPU de las que hay en núcleos físicos, apostando a que no todas las VM pidan CPU al mismo tiempo. Es normal en x86; la proporción aceptable depende de la carga.</li>
+      <li><b>Migración en vivo</b>: mover una VM encendida de un servidor físico a otro sin cortar el servicio. En VMware se llama vMotion; en IBM Power, <abbr title="Live Partition Mobility">LPM</abbr> (<i>Live Partition Mobility</i>). Requiere que ambos servidores vean el mismo almacenamiento y la misma red: aquí ya se cruzan las áreas 2, 3 y 4.</li>
+    </ul>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 2</span>Capas de virtualización: tipo 1 frente a tipo 2</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 340" role="img" aria-label="Capas de virtualización tipo 1 y tipo 2">
+      <text class="t" x="20" y="22">Tipo 1 · bare metal (producción)</text>
+      <text class="t" x="600" y="22">Tipo 2 · hospedado (laboratorio)</text>
+      <g>
+        <rect class="frame" x="16" y="40" width="168" height="168" rx="8"/><text class="s" x="24" y="56">VM 1</text>
+        <rect class="ba" x="24" y="64" width="152" height="40" rx="5"/><text class="c" x="100" y="89">Aplicación (BD)</text>
+        <rect class="bw" x="24" y="110" width="152" height="40" rx="5"/><text class="c" x="100" y="135">SO invitado (Linux)</text>
+        <rect class="b" x="24" y="156" width="152" height="44" rx="5"/><text class="c" x="100" y="175">Hardware virtual</text><text class="c m" x="100" y="191">vCPU · vRAM · vNIC</text>
+      </g>
+      <g>
+        <rect class="frame" x="196" y="40" width="168" height="168" rx="8"/><text class="s" x="204" y="56">VM 2</text>
+        <rect class="ba" x="204" y="64" width="152" height="40" rx="5"/><text class="c" x="280" y="89">Aplicación (web)</text>
+        <rect class="bw" x="204" y="110" width="152" height="40" rx="5"/><text class="c" x="280" y="135">SO invitado (Windows)</text>
+        <rect class="b" x="204" y="156" width="152" height="44" rx="5"/><text class="c" x="280" y="175">Hardware virtual</text><text class="c m" x="280" y="191">vCPU · vRAM · vNIC</text>
+      </g>
+      <g>
+        <rect class="frame" x="376" y="40" width="168" height="168" rx="8"/><text class="s" x="384" y="56">VM 3</text>
+        <rect class="ba" x="384" y="64" width="152" height="40" rx="5"/><text class="c" x="460" y="89">Aplicación (ERP)</text>
+        <rect class="bw" x="384" y="110" width="152" height="40" rx="5"/><text class="c" x="460" y="135">SO invitado (Linux)</text>
+        <rect class="b" x="384" y="156" width="152" height="44" rx="5"/><text class="c" x="460" y="175">Hardware virtual</text><text class="c m" x="460" y="191">vCPU · vRAM · vNIC</text>
+      </g>
+      <rect class="bA" x="16" y="220" width="528" height="44" rx="6"/><text class="c h" x="280" y="240">Hipervisor tipo 1</text><text class="c m" x="280" y="256">ESXi · KVM · Hyper-V · PowerVM</text>
+      <rect class="bw" x="16" y="276" width="528" height="44" rx="6"/><text class="c h" x="280" y="296">Hardware físico</text><text class="c m" x="280" y="312">núcleos · RAM · NIC · HBA</text>
+
+      <rect class="frame" x="596" y="40" width="268" height="124" rx="8"/><text class="s" x="604" y="56">VM</text>
+      <rect class="ba" x="604" y="64" width="252" height="40" rx="5"/><text class="c" x="730" y="89">Aplicación</text>
+      <rect class="bw" x="604" y="112" width="252" height="44" rx="5"/><text class="c" x="730" y="139">SO invitado</text>
+      <rect class="bA" x="596" y="172" width="268" height="44" rx="6"/><text class="c h" x="730" y="199">Hipervisor tipo 2</text>
+      <rect class="bB" x="596" y="224" width="268" height="44" rx="6"/><text class="c h" x="730" y="244">SO anfitrión</text><text class="c m" x="730" y="260">Windows / macOS / Linux</text>
+      <rect class="bw" x="596" y="276" width="268" height="44" rx="6"/><text class="c h" x="730" y="304">Hardware físico</text>
+    </svg>
+    </div>
+    <figcaption>En el tipo 1 el hipervisor es la primera capa sobre el hardware y reparte recursos entre VM aisladas. En el tipo 2 existe un sistema operativo anfitrión de por medio, lo que agrega una capa y reduce rendimiento y aislamiento.</figcaption>
+  </figure>
+
+  <h3>1.4 IBM Power frente a x86</h3>
+  <div class="prose">
+    <p>Ambos son servidores empresariales, pero con arquitecturas de procesador distintas. x86 es la arquitectura de Intel Xeon y AMD EPYC; IBM Power usa procesadores propios (Power10 en la familia E1080 y Power11 en la E1180, presentada en 2025) con sistemas operativos AIX, IBM i y Linux.</p>
+    <p>La diferencia que más impacta en preventa está en la virtualización. En Power, el hipervisor <b>PowerVM</b> vive en el firmware: siempre está presente, aun con una sola partición. Las VM se llaman <b>LPAR</b> (<i>Logical Partition</i>). La E/S se suele virtualizar a través de una o dos particiones especiales llamadas <b>VIOS</b> (<i>Virtual I/O Server</i>), que son dueñas de las tarjetas físicas y las comparten con las demás LPAR mediante adaptadores virtuales, por ejemplo <abbr title="N_Port ID Virtualization">NPIV</abbr> (<i>N_Port ID Virtualization</i>) para Fibre Channel.</p>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 3</span>E/S virtual en IBM Power: LPAR, VIOS dual y PowerVM</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 370" role="img" aria-label="PowerVM con dos VIOS que comparten adaptadores físicos">
+      <text class="c tA h" x="615" y="22">Fabric A + LAN</text>
+      <text class="c tB h" x="785" y="22">Fabric B + LAN</text>
+      <line class="lA" x1="615" y1="30" x2="615" y2="90"/><line class="lB" x1="785" y1="30" x2="785" y2="90"/>
+      <rect class="frame" x="10" y="48" width="860" height="312" rx="12"/>
+      <text class="t" x="24" y="72">Servidor IBM Power (un chasis)</text>
+      <rect class="ba" x="30" y="90" width="150" height="110" rx="6"/><text class="c h" x="105" y="118">LPAR 1 · AIX</text><text class="c s" x="105" y="140">Base de datos</text><text class="c m" x="105" y="168">vFC (NPIV) · vEth</text>
+      <rect class="ba" x="195" y="90" width="150" height="110" rx="6"/><text class="c h" x="270" y="118">LPAR 2 · IBM i</text><text class="c s" x="270" y="140">ERP</text><text class="c m" x="270" y="168">vFC (NPIV) · vEth</text>
+      <rect class="ba" x="360" y="90" width="150" height="110" rx="6"/><text class="c h" x="435" y="118">LPAR 3 · Linux</text><text class="c s" x="435" y="140">Aplicación web</text><text class="c m" x="435" y="168">vFC (NPIV) · vEth</text>
+      <rect class="bw" x="540" y="90" width="150" height="150" rx="6"/><text class="c h" x="615" y="114">VIOS 1</text><text class="c s" x="615" y="132">dueño de tarjetas físicas</text>
+      <rect class="bA" x="555" y="146" width="120" height="30" rx="4"/><text class="c" x="615" y="166">HBA FC física</text>
+      <rect class="bE" x="555" y="190" width="120" height="30" rx="4"/><text class="c" x="615" y="210">NIC física</text>
+      <rect class="bw" x="710" y="90" width="150" height="150" rx="6"/><text class="c h" x="785" y="114">VIOS 2</text><text class="c s" x="785" y="132">redundante del VIOS 1</text>
+      <rect class="bB" x="725" y="146" width="120" height="30" rx="4"/><text class="c" x="785" y="166">HBA FC física</text>
+      <rect class="bE" x="725" y="190" width="120" height="30" rx="4"/><text class="c" x="785" y="210">NIC física</text>
+      <path class="ln dash" d="M105,200 V262 M270,200 V262 M435,200 V262 M105,262 H785 M615,262 V240 M785,262 V240"/>
+      <rect class="bA" x="30" y="282" width="830" height="62" rx="6"/>
+      <text class="c h" x="445" y="306">Hipervisor PowerVM (en firmware)</text>
+      <text class="c s" x="445" y="326">Reparte núcleos y memoria; las líneas punteadas son rutas virtuales que conectan cada LPAR con ambos VIOS</text>
+    </svg>
+    </div>
+    <figcaption>Las LPAR no tienen tarjetas físicas: usan adaptadores virtuales servidos por dos VIOS. Si un VIOS se reinicia por mantenimiento, las LPAR siguen operando por el otro. Cada VIOS conecta a un fabric SAN distinto, lo que se retoma en la semana 4.</figcaption>
+  </figure>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Criterio</th><th>IBM Power (Power10 / Power11)</th><th>x86 (Intel Xeon / AMD EPYC)</th></tr></thead>
+    <tbody>
+      <tr><td>Sistemas operativos</td><td>AIX, IBM i, Linux (RHEL, SLES)</td><td>Windows Server, Linux, otros; base de VMware, Nutanix, Hyper-V</td></tr>
+      <tr><td>Hilos por núcleo (SMT)</td><td>Hasta 8 (SMT8)</td><td>Normalmente 2 (Hyper-Threading / SMT2)</td></tr>
+      <tr><td>Hipervisor</td><td>PowerVM, integrado en firmware</td><td>Se instala aparte: ESXi, KVM, Hyper-V, AHV</td></tr>
+      <tr><td>Nombre de la VM</td><td>LPAR (dedicada o con procesadores compartidos)</td><td>VM</td></tr>
+      <tr><td>Granularidad de CPU</td><td>Micro-particionamiento en fracciones de núcleo (unidades de procesamiento)</td><td>vCPU enteras, normalmente con sobresuscripción</td></tr>
+      <tr><td>E/S virtual</td><td>VIOS dual con NPIV, vSCSI y SEA (<i>Shared Ethernet Adapter</i>)</td><td>Switch virtual del hipervisor; HBA/NIC usadas por el propio hipervisor</td></tr>
+      <tr><td>Gestión de hardware</td><td>HMC (física o virtual) y procesador de servicio</td><td>BMC y consola del fabricante; vCenter u otra para el clúster</td></tr>
+      <tr><td>Capacidad bajo demanda</td><td>CoD: núcleos y memoria instalados que se activan con licencia</td><td>Depende del fabricante; normalmente se compra lo instalado</td></tr>
+      <tr><td>Casos típicos</td><td>Bases de datos críticas, core bancario, IBM i, SAP, consolidación de muchas LPAR</td><td>Virtualización general, aplicaciones Windows, web, VDI, contenedores</td></tr>
+    </tbody>
+  </table></div>
+  <p class="tcap">Fuente: Redbooks de IBM Power E1180 y PowerVM Best Practices. Los valores exactos (núcleos por socket, memoria máxima) cambian por modelo: consulta siempre la ficha del modelo concreto.</p>
+
+  <div class="note"><b>Licenciamiento.</b> Oracle Database se licencia por núcleo aplicando un factor según el procesador (en la tabla publicada por Oracle, IBM Power tiene factor 1,0 y la mayoría de x86 0,5). Esto no proviene de IBM: verifica siempre la tabla vigente de Oracle y su política de particionamiento antes de comparar costos entre plataformas.</div>
+
+  <h3>1.5 Aplicación en preventa</h3>
+  <div class="prose">
+    <h4>Qué preguntar al cliente</h4>
+    <ul>
+      <li>¿Qué aplicaciones correrán y en qué sistema operativo están certificadas?</li>
+      <li>¿Cuál es el uso de CPU y memoria en hora pico, no el promedio? ¿Hay cierres de mes o temporadas?</li>
+      <li>¿Qué crecimiento esperan en 3 a 5 años? ¿Habrá nuevas cargas?</li>
+      <li>¿Qué nivel de disponibilidad necesitan? ¿Aceptan una ventana de mantenimiento?</li>
+      <li>¿Cómo se licencia su software (por núcleo, por socket, por usuario)?</li>
+    </ul>
+    <h4>Qué datos levantar</h4>
+    <ul>
+      <li>En Power: reportes de HMC Scanner (inventario de LPAR, procesadores, memoria, VIOS) y datos de rendimiento de nmon.</li>
+      <li>En x86 virtualizado: inventario del clúster (hosts, VM, vCPU, memoria asignada y consumida, datastores) y gráficas de rendimiento de al menos un mes.</li>
+      <li>Modelo, generación de procesador y velocidad de los servidores actuales, para poder comparar rendimiento entre generaciones.</li>
+    </ul>
+    <h4>Errores comunes</h4>
+    <ul>
+      <li>Dimensionar con el promedio de CPU y no con el pico sostenido.</li>
+      <li>Comparar núcleos de generaciones o arquitecturas distintas como si fueran iguales. Para Power, IBM publica métricas relativas de rendimiento (rPerf para AIX/Linux, CPW para IBM i); no existe un factor de conversión universal x86 ↔ Power.</li>
+      <li>Contar hilos SMT como núcleos.</li>
+      <li>Olvidar los recursos que consumen los VIOS y el propio hipervisor.</li>
+      <li>No dejar margen para que un servidor absorba la carga del otro cuando falla o está en mantenimiento.</li>
+    </ul>
+  </div>
+
+  <h3>1.6 Autoevaluación</h3>
+  <div class="prose quiz">
+    <ol>
+      <li>¿Qué diferencia hay entre socket, núcleo e hilo?</li>
+      <li>¿Por qué un servidor con más núcleos no siempre es más rápido para una base de datos?</li>
+      <li>¿Qué es NUMA y qué recomendación de diseño se deriva?</li>
+      <li>¿Cuál es la diferencia entre un hipervisor tipo 1 y uno tipo 2? Da un ejemplo de cada uno.</li>
+      <li>¿Para qué sirve un VIOS y por qué se instalan dos?</li>
+      <li>Un cliente tiene 16 núcleos x86 al 70 % de uso en pico. ¿Puedes concluir que necesita 16 núcleos Power? Justifica.</li>
+      <li>¿Qué requisito de almacenamiento y red tiene la migración en vivo (vMotion o LPM)?</li>
+    </ol>
+    <details class="ans"><summary>Respuestas</summary><div><ol>
+      <li>El socket es el conector físico donde va la CPU; el núcleo es una unidad de procesamiento completa dentro de la CPU; el hilo es un flujo de instrucciones que el núcleo ejecuta en paralelo con otros gracias a SMT. Una CPU en un socket tiene varios núcleos, y cada núcleo varios hilos.</li>
+      <li>Porque el rendimiento puede estar limitado por memoria (capacidad o ancho de banda), por la E/S hacia el almacenamiento o por procesos que no se paralelizan. Además, más núcleos significa más costo de licencias por núcleo.</li>
+      <li>Es el acceso no uniforme a memoria: cada socket accede más rápido a su memoria local que a la del otro socket. Conviene que una VM o LPAR quepa dentro de un solo nodo NUMA cuando sea posible.</li>
+      <li>El tipo 1 corre directamente sobre el hardware (ESXi, KVM, PowerVM); el tipo 2 corre sobre un sistema operativo anfitrión (VirtualBox, por ejemplo). En producción se usa tipo 1.</li>
+      <li>El VIOS es una partición que posee las tarjetas físicas (HBA, NIC) y las comparte con las LPAR mediante adaptadores virtuales. Se instalan dos para que el mantenimiento o la falla de uno no deje sin red ni disco a las LPAR.</li>
+      <li>No. Son arquitecturas y probablemente generaciones distintas. Hay que partir de la carga real (núcleos usados en pico), normalizarla con métricas oficiales de rendimiento por modelo y añadir margen de crecimiento y de alta disponibilidad.</li>
+      <li>Ambos servidores deben ver los mismos volúmenes de almacenamiento (por SAN o almacenamiento compartido) y las mismas redes/VLAN, además de una red con ancho de banda suficiente para copiar la memoria de la VM.</li>
+    </ol></div></details>
+  </div>
+
+  <h3>1.7 Lecturas recomendadas</h3>
+  <ul class="reads">
+    <li><span class="src">IBM Redbooks</span><a href="https://www.redbooks.ibm.com/abstracts/sg248587.html">IBM Power E1180: Introduction and Overview (SG24-8587)</a>: capítulos 1, 2 y el de virtualización.</li>
+    <li><span class="src">IBM Redbooks</span><a href="https://www.redbooks.ibm.com/abstracts/redp5649.html">IBM Power E1080 Technical Overview and Introduction (REDP-5649)</a>: útil si el cliente tiene Power10.</li>
+    <li><span class="src">IBM Redbooks</span><a href="https://www.redbooks.ibm.com/abstracts/sg248062.html">IBM PowerVM Best Practices (SG24-8062)</a>: capítulos sobre VIOS y procesadores compartidos. Es de 2012, actualizado en 2015; los conceptos siguen vigentes, los límites numéricos no.</li>
+  </ul>
+</section>
+
+<section class="area" id="s2">
+  <div class="eyebrow"><b>Semana 2</b><span>lun 26 oct – dom 1 nov 2026</span><span>Área 2</span></div>
+  <h2>Fundamentos de redes LAN/IP</h2>
+
+  <div class="plan">
+    <div><h4>Temas</h4><ul><li>Modelos OSI y TCP/IP</li><li>Direccionamiento IPv4 y subredes</li><li>Switching, VLAN y routing</li><li>Redundancia y diseño spine-leaf</li></ul></div>
+    <div><h4>Actividades</h4><ul><li>Lectura: RFC 1918 (completo, es corto) y el white paper de Cisco sobre spine-leaf</li><li>Redibujar a mano: Fig. 4, 5 y 6</li><li>Ejercicio: dividir 10.20.0.0/22 en subredes para producción, backup, gestión y replicación</li></ul></div>
+    <div><h4>Entregable</h4><p>Tabla de direccionamiento con 4 VLAN: ID, nombre, subred, máscara, gateway, rango útil y número de hosts, más un diagrama de dos leaf con un servidor conectado a ambos.</p></div>
+  </div>
+
+  <div class="obj"><h4>Objetivos de aprendizaje</h4><ol>
+    <li>Ubicar protocolos y equipos en las capas OSI y TCP/IP.</li>
+    <li>Calcular subredes IPv4 a partir de un prefijo CIDR.</li>
+    <li>Explicar qué hace un switch, una VLAN y un router, y cuándo se necesita cada uno.</li>
+    <li>Describir los mecanismos de redundancia de red de un servidor y de un centro de datos.</li>
+    <li>Contar puertos, velocidades y transceptores para una propuesta.</li>
+  </ol></div>
+
+  <h3>2.1 Modelos OSI y TCP/IP</h3>
+  <div class="prose">
+    <p>Un modelo de capas divide la comunicación en funciones. Cada capa ofrece un servicio a la de arriba y usa el de la de abajo. El modelo <b>OSI</b> (<i>Open Systems Interconnection</i>, ISO/IEC 7498-1) tiene 7 capas y se usa como vocabulario común. El modelo <b>TCP/IP</b>, descrito en el RFC 1122, tiene 4 capas y es el que realmente implementan las redes.</p>
+    <p>Cuando un servidor envía datos, cada capa agrega su encabezado: a esto se le llama <b>encapsulamiento</b>. La unidad de datos cambia de nombre en cada capa: segmento (capa 4), paquete (capa 3), trama (capa 2) y bits (capa 1). En preventa se habla mucho de “capa 2” (switching, VLAN) y “capa 3” (IP, routing).</p>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 4</span>Capas OSI frente a capas TCP/IP</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 410" role="img" aria-label="Correspondencia entre las 7 capas OSI y las 4 capas TCP/IP">
+      <text class="t" x="40" y="24">Modelo OSI (7 capas)</text>
+      <text class="t" x="560" y="24">Modelo TCP/IP (RFC 1122)</text>
+      <rect class="ba" x="40" y="40" width="300" height="46" rx="5"/><text x="56" y="61" class="h">7 · Aplicación</text><text x="56" y="77" class="s">servicio que usa el usuario</text>
+      <rect class="ba" x="40" y="90" width="300" height="46" rx="5"/><text x="56" y="111" class="h">6 · Presentación</text><text x="56" y="127" class="s">formato, cifrado, compresión</text>
+      <rect class="ba" x="40" y="140" width="300" height="46" rx="5"/><text x="56" y="161" class="h">5 · Sesión</text><text x="56" y="177" class="s">abre y cierra diálogos</text>
+      <rect class="bB" x="40" y="190" width="300" height="46" rx="5"/><text x="56" y="211" class="h">4 · Transporte</text><text x="56" y="227" class="s">segmentos, puertos, fiabilidad</text>
+      <rect class="bA" x="40" y="240" width="300" height="46" rx="5"/><text x="56" y="261" class="h">3 · Red</text><text x="56" y="277" class="s">paquetes, direcciones IP, routers</text>
+      <rect class="bE" x="40" y="290" width="300" height="46" rx="5"/><text x="56" y="311" class="h">2 · Enlace de datos</text><text x="56" y="327" class="s">tramas, direcciones MAC, switches</text>
+      <rect class="bE" x="40" y="340" width="300" height="46" rx="5"/><text x="56" y="361" class="h">1 · Física</text><text x="56" y="377" class="s">cobre, fibra, señales, transceptores</text>
+      <path class="ln dash" d="M340,40 L560,40 M340,186 L560,186 M340,236 L560,236 M340,286 L560,286 M340,386 L560,386"/>
+      <rect class="ba" x="560" y="40" width="300" height="146" rx="5"/><text x="576" y="96" class="h">Aplicación</text><text x="576" y="116" class="m">HTTP(S) · DNS · SSH · NFS</text><text x="576" y="134" class="m">SMB · iSCSI · SQL*Net</text>
+      <rect class="bB" x="560" y="190" width="300" height="46" rx="5"/><text x="576" y="211" class="h">Transporte</text><text x="576" y="227" class="m">TCP · UDP</text>
+      <rect class="bA" x="560" y="240" width="300" height="46" rx="5"/><text x="576" y="261" class="h">Internet</text><text x="576" y="277" class="m">IPv4 · IPv6 · ICMP</text>
+      <rect class="bE" x="560" y="290" width="300" height="96" rx="5"/><text x="576" y="330" class="h">Acceso a la red (enlace)</text><text x="576" y="350" class="m">Ethernet IEEE 802.3 · VLAN 802.1Q</text><text x="576" y="368" class="m">ARP · medio físico</text>
+    </svg>
+    </div>
+    <figcaption>Las capas 5 a 7 de OSI se agrupan en la capa de aplicación de TCP/IP, y las capas 1 y 2 en la de acceso a la red. iSCSI aparece arriba porque viaja como datos sobre TCP, aunque transporte comandos de disco.</figcaption>
+  </figure>
+
+  <h3>2.2 Direccionamiento IP y subredes</h3>
+  <div class="prose">
+    <ul>
+      <li><b>Dirección MAC</b> (<i>Media Access Control</i>): 48 bits grabados en cada tarjeta de red; identifica la interfaz dentro de la red local (capa 2).</li>
+      <li><b>Dirección IPv4</b>: 32 bits escritos en cuatro octetos decimales (por ejemplo, 10.20.30.15). Identifica la interfaz en la red IP (capa 3). <b>ARP</b> (<i>Address Resolution Protocol</i>) traduce IP a MAC dentro de una subred.</li>
+      <li><b>Prefijo o máscara</b>: indica cuántos bits pertenecen a la red. 10.20.30.0/24 significa que los primeros 24 bits son la red (máscara 255.255.255.0) y los 8 restantes identifican hosts. Esta notación se llama <b>CIDR</b> (<i>Classless Inter-Domain Routing</i>, RFC 4632).</li>
+      <li><b>Direcciones privadas</b> (RFC 1918): 10.0.0.0/8, 172.16.0.0/12 y 192.168.0.0/16. No se enrutan en Internet y son las que se usan dentro de un centro de datos.</li>
+      <li><b>Gateway</b> (puerta de enlace): la IP del router en la subred; a ella se envía todo lo que va hacia otra subred.</li>
+      <li><b>IPv6</b> usa 128 bits (RFC 8200). Pregunta siempre si el cliente lo usa; cambia el plan de direccionamiento.</li>
+    </ul>
+    <p>En cada subred se pierden dos direcciones: la de red (todos los bits de host en 0) y la de broadcast (todos en 1). Por eso:</p>
+    <div class="formula">Hosts utilizables = 2^(32 − prefijo) − 2
+
+Ejemplo: 10.20.30.0/26  →  2^6 − 2 = 62 hosts
+  Red:        10.20.30.0
+  Útiles:     10.20.30.1 – 10.20.30.62   (gateway habitual: .1)
+  Broadcast:  10.20.30.63
+  Siguiente subred /26: 10.20.30.64</div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th class="num">Prefijo</th><th>Máscara</th><th class="num">Direcciones</th><th class="num">Hosts útiles</th><th>Uso típico</th></tr></thead>
+    <tbody>
+      <tr><td class="num">/22</td><td class="mono">255.255.252.0</td><td class="num">1 024</td><td class="num">1 022</td><td>Bloque que se reparte en varias subredes</td></tr>
+      <tr><td class="num">/24</td><td class="mono">255.255.255.0</td><td class="num">256</td><td class="num">254</td><td>VLAN de servidores o de usuarios</td></tr>
+      <tr><td class="num">/25</td><td class="mono">255.255.255.128</td><td class="num">128</td><td class="num">126</td><td>VLAN mediana</td></tr>
+      <tr><td class="num">/26</td><td class="mono">255.255.255.192</td><td class="num">64</td><td class="num">62</td><td>Gestión, backup</td></tr>
+      <tr><td class="num">/27</td><td class="mono">255.255.255.224</td><td class="num">32</td><td class="num">30</td><td>Red de replicación o de clúster</td></tr>
+      <tr><td class="num">/29</td><td class="mono">255.255.255.248</td><td class="num">8</td><td class="num">6</td><td>Segmentos pequeños</td></tr>
+      <tr><td class="num">/30</td><td class="mono">255.255.255.252</td><td class="num">4</td><td class="num">2</td><td>Enlace punto a punto entre routers</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>2.3 Switching y VLAN</h3>
+  <div class="prose">
+    <p>Un <b>switch</b> trabaja en capa 2: aprende qué MAC está detrás de cada puerto y reenvía cada trama solo al puerto correcto. Todos los equipos conectados al mismo switch (sin VLAN) forman un único <b>dominio de broadcast</b>: un mensaje de difusión llega a todos. En redes con varios switches, el protocolo <b>STP</b> (<i>Spanning Tree Protocol</i>) bloquea enlaces redundantes para evitar bucles, a costa de dejar enlaces sin usar.</p>
+    <p>Una <b>VLAN</b> (<i>Virtual LAN</i>) divide un switch físico en varios switches lógicos aislados. El estándar es IEEE 802.1Q: agrega a la trama una etiqueta de 4 bytes con un identificador de VLAN (VID) de 12 bits, de modo que hay 4094 VLAN utilizables (1 a 4094). Hay dos tipos de puerto:</p>
+    <ul>
+      <li><b>Acceso</b>: pertenece a una sola VLAN; el equipo conectado no ve etiquetas.</li>
+      <li><b>Troncal</b> (<i>trunk</i>): transporta varias VLAN etiquetadas. Se usa entre switches y hacia servidores con hipervisor, que reparten las VLAN entre sus VM.</li>
+    </ul>
+    <div class="analogy"><b>Analogía</b>Un edificio de oficinas (el switch) con pisos separados (las VLAN). Quien está en un piso no escucha lo que se dice en otro. Para pasar de un piso a otro hay que usar el elevador con control de acceso, que es el router.</div>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 5</span>Ejemplo de VLAN en un switch de acceso y etiqueta 802.1Q</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 420" role="img" aria-label="Switch con tres VLAN y troncal hacia un switch de capa 3">
+      <rect class="bw" x="320" y="10" width="240" height="46" rx="6"/><text class="c h" x="440" y="31">Switch capa 3 / router</text><text class="c s" x="440" y="47">enruta entre VLAN (gateways .1)</text>
+      <line class="ln" x1="440" y1="56" x2="440" y2="100" style="stroke-width:4"/>
+      <text class="m halo" x="452" y="82">troncal 802.1Q · VLAN 110, 120, 130</text>
+      <rect class="b" x="160" y="100" width="560" height="74" rx="6"/><text class="h" x="176" y="122">Switch de acceso (leaf)</text>
+      <rect class="ba" x="216" y="140" width="22" height="22" rx="3"/><rect class="ba" x="246" y="140" width="22" height="22" rx="3"/>
+      <rect class="bB" x="408" y="140" width="22" height="22" rx="3"/>
+      <rect class="bA" x="618" y="140" width="22" height="22" rx="3"/>
+      <rect class="bw" x="438" y="140" width="22" height="22" rx="3"/><rect class="bw" x="468" y="140" width="22" height="22" rx="3"/><rect class="bw" x="648" y="140" width="22" height="22" rx="3"/>
+      <path class="la" d="M227,162 V220 H125 V250"/><path class="la" d="M257,162 V250"/>
+      <path class="lB" d="M419,162 V220 H545 V250"/><path class="lA" d="M629,162 V220 H755 V250"/>
+      <rect class="ba" x="40" y="250" width="170" height="60" rx="6"/><text class="c h" x="125" y="275">Servidor BD</text><text class="c m" x="125" y="295">VLAN 110 · 10.10.110.21</text>
+      <rect class="ba" x="230" y="250" width="170" height="60" rx="6"/><text class="c h" x="315" y="275">Servidor app</text><text class="c m" x="315" y="295">VLAN 110 · 10.10.110.22</text>
+      <rect class="bB" x="460" y="250" width="170" height="60" rx="6"/><text class="c h" x="545" y="275">Servidor backup</text><text class="c m" x="545" y="295">VLAN 120 · 10.10.120.10</text>
+      <rect class="bA" x="670" y="250" width="170" height="60" rx="6"/><text class="c h" x="755" y="275">Consola gestión</text><text class="c m" x="755" y="295">VLAN 130 · 10.10.130.5</text>
+      <text class="t" x="40" y="350">Trama Ethernet con etiqueta 802.1Q</text>
+      <rect class="bw" x="40" y="362" width="100" height="40"/><text class="c s" x="90" y="387">MAC destino</text>
+      <rect class="bw" x="140" y="362" width="100" height="40"/><text class="c s" x="190" y="387">MAC origen</text>
+      <rect class="ba" x="240" y="362" width="320" height="40"/><text class="c" x="400" y="380">Etiqueta 802.1Q · 4 bytes</text><text class="c m" x="400" y="395">TPID 0x8100 · PCP · DEI · VID (12 bits)</text>
+      <rect class="bw" x="560" y="362" width="70" height="40"/><text class="c s" x="595" y="387">Tipo</text>
+      <rect class="bw" x="630" y="362" width="150" height="40"/><text class="c s" x="705" y="387">Datos (paquete IP)</text>
+      <rect class="bw" x="780" y="362" width="60" height="40"/><text class="c s" x="810" y="387">FCS</text>
+    </svg>
+    </div>
+    <figcaption>Cada color es una VLAN y cada una tiene su propia subred. Los servidores de VLAN distintas solo se comunican pasando por el switch de capa 3, donde se pueden aplicar reglas de seguridad. La etiqueta 802.1Q solo viaja por los puertos troncales.</figcaption>
+  </figure>
+
+  <h3>2.4 Routing</h3>
+  <div class="prose">
+    <p>Un <b>router</b> (o un switch de capa 3) conecta subredes distintas. Decide hacia dónde enviar cada paquete según su <b>tabla de rutas</b>. Las rutas pueden ser <b>estáticas</b> (configuradas a mano) o <b>dinámicas</b>, aprendidas con protocolos como OSPF (<i>Open Shortest Path First</i>) dentro de la organización o BGP (<i>Border Gateway Protocol</i>) entre organizaciones y en fabrics modernos de centro de datos. Cuando hay varias rutas del mismo costo, <b>ECMP</b> (<i>Equal-Cost Multi-Path</i>) reparte el tráfico entre todas.</p>
+  </div>
+
+  <h3>2.5 Redundancia</h3>
+  <div class="prose">
+    <ul>
+      <li><b>En el servidor</b>: dos puertos de red conectados a dos switches distintos y agrupados por el sistema operativo o el hipervisor (<i>bonding</i>, <i>teaming</i>, EtherChannel en AIX).</li>
+      <li><b>LACP</b> (<i>Link Aggregation Control Protocol</i>, IEEE 802.1AX): une varios enlaces físicos en uno lógico, que suma ancho de banda y sobrevive a la caída de un enlace.</li>
+      <li><b>MLAG</b> (<i>Multi-Chassis Link Aggregation</i>; en Cisco, vPC): permite que esos enlaces agregados terminen en dos switches distintos. Así se protege contra la falla de un switch completo.</li>
+      <li><b>Gateway redundante</b>: VRRP (<i>Virtual Router Redundancy Protocol</i>, RFC 5798) o HSRP de Cisco publican una IP de gateway virtual que sobrevive a la caída de un router.</li>
+      <li><b>Fuentes, energía y rutas físicas</b>: dos fuentes por equipo, dos circuitos eléctricos, cableado por rutas separadas.</li>
+    </ul>
+  </div>
+
+  <h3>2.6 Diseño de red en el centro de datos</h3>
+  <div class="prose">
+    <p>El diseño clásico de <b>tres capas</b> (núcleo, agregación y acceso) fue pensado para tráfico que entra y sale del centro de datos (norte-sur). Con la virtualización creció el tráfico entre servidores (este-oeste) y se popularizó la arquitectura <b>spine-leaf</b>: cada switch leaf (de acceso, normalmente en la parte superior del rack o ToR, <i>Top of Rack</i>) se conecta a todos los spines. Cualquier servidor queda a la misma distancia de cualquier otro y se crece agregando leaves o spines.</p>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 6</span>Topología spine-leaf con servidores en doble conexión</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 420" role="img" aria-label="Topología spine-leaf con dos spines, cuatro leaves y servidores conectados a pares de leaves">
+      <rect class="bw" x="330" y="10" width="220" height="44" rx="6"/><text class="c h" x="440" y="30">Borde: firewall / WAN</text><text class="c s" x="440" y="46">salida norte-sur</text>
+      <rect class="bA" x="220" y="100" width="160" height="44" rx="6"/><text class="c h" x="300" y="127">Spine 1</text>
+      <rect class="bA" x="500" y="100" width="160" height="44" rx="6"/><text class="c h" x="580" y="127">Spine 2</text>
+      <text class="s" x="20" y="127">Capa spine</text>
+      <path class="ln" d="M400,54 L300,100 M480,54 L580,100"/>
+      <path class="lA" d="M125,230 L300,144 M125,230 L580,144 M335,230 L300,144 M335,230 L580,144 M545,230 L300,144 M545,230 L580,144 M755,230 L300,144 M755,230 L580,144"/>
+      <rect class="bE" x="40" y="230" width="170" height="44" rx="6"/><text class="c h" x="125" y="257">Leaf 1 (ToR)</text>
+      <rect class="bE" x="250" y="230" width="170" height="44" rx="6"/><text class="c h" x="335" y="257">Leaf 2 (ToR)</text>
+      <rect class="bE" x="460" y="230" width="170" height="44" rx="6"/><text class="c h" x="545" y="257">Leaf 3 (ToR)</text>
+      <rect class="bE" x="670" y="230" width="170" height="44" rx="6"/><text class="c h" x="755" y="257">Leaf 4 (ToR)</text>
+      <text class="s" x="20" y="214">Capa leaf</text>
+      <path class="ln dash" d="M210,252 H250 M630,252 H670"/>
+      <text class="c m" x="230" y="294">MLAG</text><text class="c m" x="650" y="294">MLAG</text>
+      <rect class="ba" x="150" y="340" width="160" height="56" rx="6"/><text class="c h" x="230" y="364">Servidor A</text><text class="c m" x="230" y="382">2 × 25 GbE (LACP)</text>
+      <rect class="ba" x="570" y="340" width="160" height="56" rx="6"/><text class="c h" x="650" y="364">Servidor B</text><text class="c m" x="650" y="382">2 × 25 GbE (LACP)</text>
+      <path class="lE" d="M125,274 L200,340 M335,274 L260,340 M545,274 L620,340 M755,274 L680,340"/>
+    </svg>
+    </div>
+    <figcaption>Cada leaf se conecta a ambos spines, así que entre dos servidores siempre hay dos saltos (leaf, spine, leaf) y ECMP usa todos los enlaces a la vez. Cada servidor se conecta a un par de leaves con MLAG: si cae un leaf o un spine, el servicio continúa.</figcaption>
+  </figure>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Criterio</th><th>Tres capas (núcleo / agregación / acceso)</th><th>Spine-leaf</th></tr></thead>
+    <tbody>
+      <tr><td>Tráfico que optimiza</td><td>Norte-sur (usuarios ↔ servidores)</td><td>Este-oeste (servidor ↔ servidor) y norte-sur</td></tr>
+      <tr><td>Uso de enlaces redundantes</td><td>STP bloquea parte de ellos</td><td>Todos activos con routing y ECMP</td></tr>
+      <tr><td>Latencia entre servidores</td><td>Variable según dónde estén</td><td>Predecible: siempre leaf-spine-leaf</td></tr>
+      <tr><td>Crecimiento</td><td>Cambiar o ampliar equipos de agregación</td><td>Agregar leaves (puertos) o spines (ancho de banda)</td></tr>
+      <tr><td>Dónde aparece</td><td>Redes existentes, campus, centros de datos pequeños</td><td>Centros de datos nuevos, nubes privadas</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Velocidad Ethernet</th><th>Uso típico en el centro de datos</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">1 GbE</td><td>Puertos de gestión (BMC, HMC, consolas)</td></tr>
+      <tr><td class="mono">10 GbE</td><td>Servidores de generaciones anteriores, iSCSI y NAS pequeños</td></tr>
+      <tr><td class="mono">25 GbE</td><td>Conexión estándar actual de servidor a leaf</td></tr>
+      <tr><td class="mono">40 GbE</td><td>Enlaces heredados entre switches</td></tr>
+      <tr><td class="mono">100 GbE</td><td>Servidores de alto tráfico y enlaces leaf-spine</td></tr>
+      <tr><td class="mono">200 / 400 GbE</td><td>Enlaces spine, clústeres de IA y almacenamiento de alto rendimiento</td></tr>
+      <tr><td class="mono">800 GbE</td><td>Estándar IEEE 802.3df aprobado en 2024; principalmente fabrics de IA y grandes spines</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>2.7 Aplicación en preventa</h3>
+  <div class="prose">
+    <h4>Qué preguntar al cliente</h4>
+    <ul>
+      <li>¿Qué marca y modelo de switches tienen y qué velocidades de puerto están libres?</li>
+      <li>¿Qué tipo de conexión física usan: cobre, fibra multimodo, fibra monomodo, cables DAC (<i>Direct Attach Copper</i>)?</li>
+      <li>¿Cuántas VLAN necesita el proyecto y quién asigna las IP?</li>
+      <li>¿Usan MTU de 9000 bytes (<i>jumbo frames</i>) para iSCSI, backup o migración de VM?</li>
+      <li>¿Hay firewall entre segmentos que deba considerar tráfico de backup o replicación?</li>
+    </ul>
+    <h4>Qué datos levantar</h4>
+    <ul>
+      <li>Número de puertos por servidor (producción, backup, gestión, replicación) y su velocidad.</li>
+      <li>Tráfico actual en pico, si existe monitoreo.</li>
+      <li>Distancias entre racks y entre sitios para elegir el transceptor o cable correcto.</li>
+    </ul>
+    <h4>Errores comunes</h4>
+    <ul>
+      <li>Olvidar los puertos de gestión (BMC, HMC, controladoras de storage) y sus IP.</li>
+      <li>No incluir transceptores ni cables en la cotización, o elegir los de una velocidad o tipo de fibra que el switch del cliente no acepta.</li>
+      <li>Conectar los dos puertos de un servidor al mismo switch: eso no es redundancia.</li>
+      <li>Mezclar tráfico de backup con el de producción en los mismos enlaces sin calcular el impacto.</li>
+      <li>Configurar MTU de 9000 en el servidor y no en todo el camino.</li>
+    </ul>
+  </div>
+
+  <h3>2.8 Autoevaluación</h3>
+  <div class="prose quiz">
+    <ol>
+      <li>¿En qué capa OSI trabajan un switch y un router?</li>
+      <li>¿Cuántos hosts útiles tiene una subred /27 y cuál es su máscara?</li>
+      <li>Divide 192.168.50.0/24 en cuatro subredes iguales: escribe la dirección de red de cada una.</li>
+      <li>¿Qué diferencia hay entre un puerto de acceso y uno troncal?</li>
+      <li>¿Cuántas VLAN utilizables permite 802.1Q y por qué?</li>
+      <li>¿Por qué spine-leaf aprovecha mejor los enlaces que un diseño de tres capas con STP?</li>
+      <li>Un servidor tiene dos puertos de 25 GbE en LACP hacia dos leaves con MLAG. ¿Qué falla tolera?</li>
+    </ol>
+    <details class="ans"><summary>Respuestas</summary><div><ol>
+      <li>El switch en capa 2 (enlace de datos, con direcciones MAC); el router en capa 3 (red, con direcciones IP). Un switch de capa 3 hace ambas cosas.</li>
+      <li>2<sup>5</sup> − 2 = 30 hosts; máscara 255.255.255.224.</li>
+      <li>Cada una es /26: 192.168.50.0, 192.168.50.64, 192.168.50.128 y 192.168.50.192.</li>
+      <li>El de acceso pertenece a una sola VLAN y envía tramas sin etiqueta; el troncal transporta varias VLAN con etiqueta 802.1Q.</li>
+      <li>4094: el VID tiene 12 bits (4096 valores) y los valores 0 y 4095 están reservados.</li>
+      <li>Porque en spine-leaf los enlaces son de capa 3 y ECMP los usa todos en paralelo, mientras que STP bloquea los enlaces redundantes para evitar bucles.</li>
+      <li>La falla de un puerto, de un cable o de un leaf completo. El servidor sigue con 25 GbE disponibles en vez de 50 GbE.</li>
+    </ol></div></details>
+  </div>
+
+  <h3>2.9 Lecturas recomendadas</h3>
+  <ul class="reads">
+    <li><span class="src">IETF</span><a href="https://www.rfc-editor.org/rfc/rfc1918">RFC 1918: Address Allocation for Private Internets</a></li>
+    <li><span class="src">IETF</span><a href="https://www.rfc-editor.org/rfc/rfc4632">RFC 4632: Classless Inter-domain Routing (CIDR)</a>: secciones 3.1 y 3.2.</li>
+    <li><span class="src">IETF</span><a href="https://www.rfc-editor.org/rfc/rfc1122">RFC 1122: Requirements for Internet Hosts</a>: sección 1.1.3, capas de la arquitectura.</li>
+    <li><span class="src">Cisco</span><a href="https://www.cisco.com/c/en/us/products/collateral/switches/nexus-7000-series-switches/white-paper-c11-737022.html">Cisco Data Center Spine-and-Leaf Architecture: Design Overview</a></li>
+    <li><span class="src">IEEE</span><a href="https://standards.ieee.org/standard/802_1Q-2022.html">IEEE 802.1Q-2022: Bridges and Bridged Networks</a>: ficha del estándar (el texto completo es de pago).</li>
+  </ul>
+</section>
+
+<section class="area" id="s3">
+  <div class="eyebrow"><b>Semana 3</b><span>lun 2 – dom 8 nov 2026</span><span>Área 3</span></div>
+  <h2>Storage: tipos, RAID y métricas de rendimiento</h2>
+
+  <div class="plan">
+    <div><h4>Temas</h4><ul><li>DAS, NAS, SAN y objeto</li><li>Bloque, archivo y objeto</li><li>RAID, tiers y medios</li><li>Servicios de datos y métricas</li></ul></div>
+    <div><h4>Actividades</h4><ul><li>Lectura: capítulo 1 de <em>Introduction to Storage Area Networks</em> y términos RAID del diccionario SNIA</li><li>Redibujar a mano: Fig. 7, 8 y 9</li><li>Ejercicio: calcular capacidad útil e IOPS de back-end para tres niveles de RAID</li></ul></div>
+    <div><h4>Entregable</h4><p>Hoja de cálculo propia con: capacidad bruta, nivel de RAID, capacidad útil, IOPS de front-end, mezcla lectura/escritura, IOPS de back-end y throughput. Debe reproducir el ejemplo 3.7.</p></div>
+  </div>
+
+  <div class="obj"><h4>Objetivos de aprendizaje</h4><ol>
+    <li>Diferenciar DAS, NAS, SAN y almacenamiento de objetos, y el tipo de acceso de cada uno.</li>
+    <li>Calcular capacidad útil y tolerancia a fallas de RAID 1, 5, 6 y 10.</li>
+    <li>Explicar thin provisioning, snapshots, replicación, deduplicación y compresión, y su efecto en la capacidad.</li>
+    <li>Relacionar IOPS, throughput, latencia y tamaño de bloque con fórmulas simples.</li>
+    <li>Identificar los datos mínimos para dimensionar un arreglo de almacenamiento.</li>
+  </ol></div>
+
+  <h3>3.1 DAS, NAS, SAN y objeto</h3>
+  <div class="prose">
+    <ul>
+      <li><b>DAS</b> (<i>Direct-Attached Storage</i>): discos dentro del servidor o en un gabinete conectado directo (SAS, NVMe). Rápido y simple, pero solo lo usa ese servidor.</li>
+      <li><b>NAS</b> (<i>Network-Attached Storage</i>): un equipo con su propio sistema de archivos que comparte carpetas por la red IP usando NFS (<i>Network File System</i>, común en Linux/UNIX) o SMB (<i>Server Message Block</i>, común en Windows).</li>
+      <li><b>SAN</b> (<i>Storage Area Network</i>): una red dedicada que entrega volúmenes de bloque (LUN) a los servidores. El servidor ve cada LUN como si fuera un disco local y le pone su propio sistema de archivos o la base de datos lo usa directo. Se detalla en la semana 4.</li>
+      <li><b>Almacenamiento de objetos</b>: guarda datos como objetos con un identificador y metadatos, accesibles por HTTP con APIs como S3. Escala a petabytes. En IBM, por ejemplo, IBM Cloud Object Storage.</li>
+    </ul>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 7</span>DAS, NAS y SAN: dónde está el disco y por dónde se llega a él</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 330" role="img" aria-label="Comparación de DAS, NAS y SAN">
+      <rect class="frame" x="10" y="10" width="270" height="310" rx="10"/><text class="t" x="24" y="34">DAS</text>
+      <rect class="ba" x="70" y="60" width="150" height="44" rx="6"/><text class="c h" x="145" y="87">Servidor</text>
+      <line class="ln" x1="145" y1="104" x2="145" y2="196" marker-end="url(#ar)"/><text class="m halo" x="153" y="155">SAS / NVMe</text>
+      <rect class="bB" x="70" y="200" width="150" height="56" rx="6"/><text class="c h" x="145" y="224">Discos propios</text><text class="c s" x="145" y="242">solo de este servidor</text>
+      <text class="c s" x="145" y="300">Bloque · 1 servidor</text>
+
+      <rect class="frame" x="305" y="10" width="270" height="310" rx="10"/><text class="t" x="319" y="34">NAS</text>
+      <rect class="ba" x="320" y="60" width="110" height="44" rx="6"/><text class="c h" x="375" y="87">Servidor 1</text>
+      <rect class="ba" x="450" y="60" width="110" height="44" rx="6"/><text class="c h" x="505" y="87">Servidor 2</text>
+      <rect class="bE" x="365" y="134" width="150" height="36" rx="6"/><text class="c h" x="440" y="157">Switch Ethernet</text>
+      <path class="lE" d="M375,104 L420,134 M505,104 L460,134 M440,170 L440,200"/>
+      <rect class="bB" x="365" y="200" width="150" height="56" rx="6"/><text class="c h" x="440" y="224">NAS</text><text class="c m" x="440" y="242">archivos · NFS / SMB</text>
+      <text class="c s" x="440" y="300">Archivo · varios clientes por IP</text>
+
+      <rect class="frame" x="600" y="10" width="270" height="310" rx="10"/><text class="t" x="614" y="34">SAN</text>
+      <rect class="ba" x="615" y="60" width="110" height="44" rx="6"/><text class="c h" x="670" y="81">Servidor 1</text><text class="c m" x="670" y="96">HBA</text>
+      <rect class="ba" x="745" y="60" width="110" height="44" rx="6"/><text class="c h" x="800" y="81">Servidor 2</text><text class="c m" x="800" y="96">HBA</text>
+      <rect class="bA" x="660" y="134" width="150" height="36" rx="6"/><text class="c h" x="735" y="157">Switch FC</text>
+      <path class="lA" d="M670,104 L715,134 M800,104 L755,134 M735,170 L735,200"/>
+      <rect class="bB" x="660" y="200" width="150" height="56" rx="6"/><text class="c h" x="735" y="224">Arreglo</text><text class="c m" x="735" y="242">LUN 1 · LUN 2</text>
+      <text class="c s" x="735" y="300">Bloque · varios servidores, red dedicada</text>
+    </svg>
+    </div>
+    <figcaption>En DAS el disco pertenece a un solo servidor. En NAS los servidores piden archivos al NAS por la LAN. En SAN cada servidor recibe sus propios volúmenes de bloque por una red dedicada; el arreglo es compartido, pero cada LUN se entrega solo al servidor autorizado.</figcaption>
+  </figure>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Criterio</th><th>DAS</th><th>NAS</th><th>SAN</th><th>Objeto</th></tr></thead>
+    <tbody>
+      <tr><td>Tipo de acceso</td><td>Bloque</td><td>Archivo</td><td>Bloque</td><td>Objeto (HTTP/S3)</td></tr>
+      <tr><td>Red</td><td>Ninguna (cable directo)</td><td>LAN IP</td><td>FC o IP dedicada</td><td>LAN / WAN IP</td></tr>
+      <tr><td>Compartido</td><td>No</td><td>Sí, a nivel de archivo</td><td>Sí, el arreglo; cada LUN por host o clúster</td><td>Sí, a escala masiva</td></tr>
+      <tr><td>Latencia típica</td><td>Muy baja</td><td>Media</td><td>Baja</td><td>Alta (no es para transacciones)</td></tr>
+      <tr><td>Usos</td><td>Arranque del SO, nodos hiperconvergentes</td><td>Carpetas compartidas, home, archivos de aplicación</td><td>Bases de datos, virtualización, ERP</td><td>Backup, archivo, datos no estructurados, analítica</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>3.2 Bloque, archivo y objeto</h3>
+  <div class="prose"><p>La diferencia de fondo es <b>quién organiza los datos</b>. En bloque, el almacenamiento solo entrega bloques numerados y el servidor decide qué significan. En archivo, el almacenamiento mantiene carpetas y nombres. En objeto, no hay jerarquía: cada objeto se recupera por su identificador y lleva metadatos propios.</p></div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 8</span>Tres formas de organizar y pedir los datos</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 330" role="img" aria-label="Comparación de almacenamiento de bloque, archivo y objeto">
+      <text class="t" x="20" y="24">Bloque</text>
+      <g>
+        <rect class="bw" x="20" y="40" width="52" height="34"/><text class="c m" x="46" y="61">0</text>
+        <rect class="bw" x="72" y="40" width="52" height="34"/><text class="c m" x="98" y="61">1</text>
+        <rect class="bw" x="124" y="40" width="52" height="34"/><text class="c m" x="150" y="61">2</text>
+        <rect class="bw" x="176" y="40" width="52" height="34"/><text class="c m" x="202" y="61">3</text>
+        <rect class="bw" x="20" y="74" width="52" height="34"/><text class="c m" x="46" y="95">4</text>
+        <rect class="ba" x="72" y="74" width="52" height="34"/><text class="c m" x="98" y="95">5</text>
+        <rect class="bw" x="124" y="74" width="52" height="34"/><text class="c m" x="150" y="95">6</text>
+        <rect class="bw" x="176" y="74" width="52" height="34"/><text class="c m" x="202" y="95">7</text>
+        <rect class="bw" x="20" y="108" width="52" height="34"/><text class="c m" x="46" y="129">8</text>
+        <rect class="bw" x="72" y="108" width="52" height="34"/><text class="c m" x="98" y="129">9</text>
+        <rect class="bw" x="124" y="108" width="52" height="34"/><text class="c m" x="150" y="129">10</text>
+        <rect class="bw" x="176" y="108" width="52" height="34"/><text class="c m" x="202" y="129">11</text>
+      </g>
+      <text class="s" x="20" y="166">LUN = arreglo de bloques numerados (LBA)</text>
+      <rect class="b" x="20" y="182" width="250" height="40" rx="5"/><text class="m" x="30" y="206">“leer bloque 5 del LUN 7”</text>
+      <text class="h" x="20" y="252">Quién organiza</text><text class="s" x="20" y="270">el SO o la base de datos</text>
+      <text class="h" x="20" y="296">Uso típico</text><text class="s" x="20" y="314">BD, VM, ERP</text>
+
+      <text class="t" x="320" y="24">Archivo</text>
+      <rect class="bB" x="320" y="40" width="110" height="28" rx="4"/><text x="330" y="59">/datos</text>
+      <path class="ln" d="M340,68 V164 H360 M340,96 H360 M380,110 V130 H400"/>
+      <rect class="bB" x="360" y="82" width="120" height="28" rx="4"/><text x="370" y="101">ventas/</text>
+      <rect class="bw" x="400" y="116" width="150" height="28" rx="4"/><text x="410" y="135">enero.csv</text>
+      <rect class="bB" x="360" y="150" width="120" height="28" rx="4"/><text x="370" y="169">rrhh/</text>
+      <rect class="b" x="320" y="182" width="250" height="40" rx="5"/><text class="m" x="330" y="206">“abrir /datos/ventas/enero.csv”</text>
+      <text class="h" x="320" y="252">Quién organiza</text><text class="s" x="320" y="270">el NAS (sistema de archivos)</text>
+      <text class="h" x="320" y="296">Uso típico</text><text class="s" x="320" y="314">carpetas compartidas, home</text>
+
+      <text class="t" x="620" y="24">Objeto</text>
+      <rect class="frame" x="620" y="36" width="250" height="140" rx="8"/><text class="s" x="632" y="54">bucket: facturas</text>
+      <rect class="bA" x="634" y="64" width="222" height="48" rx="5"/><text x="644" y="83" class="h">ID: factura-001.pdf</text><text x="644" y="101" class="m">datos + metadatos</text>
+      <rect class="bA" x="634" y="118" width="222" height="48" rx="5"/><text x="644" y="137" class="h">ID: factura-002.pdf</text><text x="644" y="155" class="m">datos + metadatos</text>
+      <rect class="b" x="620" y="182" width="250" height="40" rx="5"/><text class="m" x="630" y="206">“GET /facturas/factura-001.pdf”</text>
+      <text class="h" x="620" y="252">Quién organiza</text><text class="s" x="620" y="270">el sistema de objetos (espacio plano)</text>
+      <text class="h" x="620" y="296">Uso típico</text><text class="s" x="620" y="314">backup, archivo, analítica</text>
+    </svg>
+    </div>
+    <figcaption>La pregunta clave para el cliente es qué tipo de petición hace su aplicación. Una base de datos pide bloques; un usuario de Windows pide archivos; una aplicación nativa de nube pide objetos por HTTP.</figcaption>
+  </figure>
+
+  <h3>3.3 Medios de almacenamiento</h3>
+  <div class="prose">
+    <ul>
+      <li><b>HDD</b> (<i>Hard Disk Drive</i>): disco mecánico. Mucha capacidad por costo, pero pocas IOPS y latencia de milisegundos por el movimiento del brazo.</li>
+      <li><b>SSD</b> (<i>Solid-State Drive</i>): memoria flash, sin partes móviles. Latencias por debajo del milisegundo.</li>
+      <li><b>NVMe</b> (<i>Non-Volatile Memory Express</i>): protocolo diseñado para flash conectado por PCIe, con muchas colas en paralelo. Reemplaza a SAS/SATA en sistemas modernos.</li>
+      <li><b>IBM FlashCore Module (FCM)</b>: módulo NVMe de IBM usado en FlashSystem, con compresión por hardware integrada en el propio módulo.</li>
+    </ul>
+  </div>
+
+  <h3>3.4 RAID</h3>
+  <div class="prose">
+    <p><b>RAID</b> (<i>Redundant Array of Independent Disks</i>) combina varios discos para obtener protección contra fallas, rendimiento o ambos. Las técnicas base son tres: <b>franjas</b> (<i>striping</i>, repartir datos entre discos), <b>espejo</b> (<i>mirroring</i>, copia idéntica) y <b>paridad</b> (información calculada que permite reconstruir un disco perdido).</p>
+    <p>Cada escritura en RAID con protección cuesta más de una operación en disco. A esto se le llama <b>penalidad de escritura</b>: en RAID 5, actualizar un bloque implica leer el dato y la paridad anteriores y escribir el dato y la paridad nuevos (4 operaciones).</p>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 9</span>Distribución de datos y paridad en RAID 1, 5, 6 y 10</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 475" role="img" aria-label="Distribución de datos y paridad en RAID 1, 5, 6 y 10">
+<rect class="frame" x="10" y="10" width="420" height="210" rx="10"/>
+<text class="t" x="24" y="36">RAID 1 · espejo</text>
+<text class="c s" x="187.0" y="66">Disco 1</text>
+<text class="c s" x="253.0" y="66">Disco 2</text>
+<rect class="bw" x="158" y="76" width="58" height="26" rx="3"/><text class="c" x="187.0" y="94">A1</text>
+<rect class="ba" x="224" y="76" width="58" height="26" rx="3"/><text class="c" x="253.0" y="94">A1</text>
+<rect class="bw" x="158" y="110" width="58" height="26" rx="3"/><text class="c" x="187.0" y="128">A2</text>
+<rect class="ba" x="224" y="110" width="58" height="26" rx="3"/><text class="c" x="253.0" y="128">A2</text>
+<rect class="bw" x="158" y="144" width="58" height="26" rx="3"/><text class="c" x="187.0" y="162">A3</text>
+<rect class="ba" x="224" y="144" width="58" height="26" rx="3"/><text class="c" x="253.0" y="162">A3</text>
+<text class="s" x="24" y="180"></text>
+<text class="c s" x="220" y="202">Útil 50 % · tolera 1 disco · penalidad de escritura 2</text>
+<rect class="frame" x="450" y="10" width="420" height="210" rx="10"/>
+<text class="t" x="464" y="36">RAID 5 · paridad simple distribuida</text>
+<text class="c s" x="561.0" y="66">Disco 1</text>
+<text class="c s" x="627.0" y="66">Disco 2</text>
+<text class="c s" x="693.0" y="66">Disco 3</text>
+<text class="c s" x="759.0" y="66">Disco 4</text>
+<rect class="bw" x="532" y="76" width="58" height="26" rx="3"/><text class="c" x="561.0" y="94">A1</text>
+<rect class="bw" x="598" y="76" width="58" height="26" rx="3"/><text class="c" x="627.0" y="94">A2</text>
+<rect class="bw" x="664" y="76" width="58" height="26" rx="3"/><text class="c" x="693.0" y="94">A3</text>
+<rect class="bB" x="730" y="76" width="58" height="26" rx="3"/><text class="c" x="759.0" y="94">A·P</text>
+<rect class="bw" x="532" y="110" width="58" height="26" rx="3"/><text class="c" x="561.0" y="128">B1</text>
+<rect class="bw" x="598" y="110" width="58" height="26" rx="3"/><text class="c" x="627.0" y="128">B2</text>
+<rect class="bB" x="664" y="110" width="58" height="26" rx="3"/><text class="c" x="693.0" y="128">B·P</text>
+<rect class="bw" x="730" y="110" width="58" height="26" rx="3"/><text class="c" x="759.0" y="128">B3</text>
+<rect class="bw" x="532" y="144" width="58" height="26" rx="3"/><text class="c" x="561.0" y="162">C1</text>
+<rect class="bB" x="598" y="144" width="58" height="26" rx="3"/><text class="c" x="627.0" y="162">C·P</text>
+<rect class="bw" x="664" y="144" width="58" height="26" rx="3"/><text class="c" x="693.0" y="162">C2</text>
+<rect class="bw" x="730" y="144" width="58" height="26" rx="3"/><text class="c" x="759.0" y="162">C3</text>
+<text class="s" x="464" y="180"></text>
+<text class="c s" x="660" y="202">Útil (N−1)/N · tolera 1 disco · penalidad 4</text>
+<rect class="frame" x="10" y="230" width="420" height="210" rx="10"/>
+<text class="t" x="24" y="256">RAID 6 · doble paridad distribuida</text>
+<text class="c s" x="88.0" y="286">Disco 1</text>
+<text class="c s" x="154.0" y="286">Disco 2</text>
+<text class="c s" x="220.0" y="286">Disco 3</text>
+<text class="c s" x="286.0" y="286">Disco 4</text>
+<text class="c s" x="352.0" y="286">Disco 5</text>
+<rect class="bw" x="59" y="296" width="58" height="26" rx="3"/><text class="c" x="88.0" y="314">A1</text>
+<rect class="bw" x="125" y="296" width="58" height="26" rx="3"/><text class="c" x="154.0" y="314">A2</text>
+<rect class="bw" x="191" y="296" width="58" height="26" rx="3"/><text class="c" x="220.0" y="314">A3</text>
+<rect class="bB" x="257" y="296" width="58" height="26" rx="3"/><text class="c" x="286.0" y="314">A·P</text>
+<rect class="bA" x="323" y="296" width="58" height="26" rx="3"/><text class="c" x="352.0" y="314">A·Q</text>
+<rect class="bw" x="59" y="330" width="58" height="26" rx="3"/><text class="c" x="88.0" y="348">B1</text>
+<rect class="bw" x="125" y="330" width="58" height="26" rx="3"/><text class="c" x="154.0" y="348">B2</text>
+<rect class="bB" x="191" y="330" width="58" height="26" rx="3"/><text class="c" x="220.0" y="348">B·P</text>
+<rect class="bA" x="257" y="330" width="58" height="26" rx="3"/><text class="c" x="286.0" y="348">B·Q</text>
+<rect class="bw" x="323" y="330" width="58" height="26" rx="3"/><text class="c" x="352.0" y="348">B3</text>
+<rect class="bw" x="59" y="364" width="58" height="26" rx="3"/><text class="c" x="88.0" y="382">C1</text>
+<rect class="bB" x="125" y="364" width="58" height="26" rx="3"/><text class="c" x="154.0" y="382">C·P</text>
+<rect class="bA" x="191" y="364" width="58" height="26" rx="3"/><text class="c" x="220.0" y="382">C·Q</text>
+<rect class="bw" x="257" y="364" width="58" height="26" rx="3"/><text class="c" x="286.0" y="382">C2</text>
+<rect class="bw" x="323" y="364" width="58" height="26" rx="3"/><text class="c" x="352.0" y="382">C3</text>
+<text class="s" x="24" y="400"></text>
+<text class="c s" x="220" y="422">Útil (N−2)/N · tolera 2 discos · penalidad 6</text>
+<rect class="frame" x="450" y="230" width="420" height="210" rx="10"/>
+<text class="t" x="464" y="256">RAID 10 · espejos + franjas</text>
+<rect class="frame" x="527" y="270" width="134" height="136" rx="6"/>
+<text class="c m" x="594.0" y="420">espejo 1</text>
+<rect class="frame" x="659" y="270" width="134" height="136" rx="6"/>
+<text class="c m" x="726.0" y="420">espejo 2</text>
+<text class="c s" x="561.0" y="286">Disco 1</text>
+<text class="c s" x="627.0" y="286">Disco 2</text>
+<text class="c s" x="693.0" y="286">Disco 3</text>
+<text class="c s" x="759.0" y="286">Disco 4</text>
+<rect class="bw" x="532" y="296" width="58" height="26" rx="3"/><text class="c" x="561.0" y="314">A1</text>
+<rect class="ba" x="598" y="296" width="58" height="26" rx="3"/><text class="c" x="627.0" y="314">A1</text>
+<rect class="bw" x="664" y="296" width="58" height="26" rx="3"/><text class="c" x="693.0" y="314">A2</text>
+<rect class="ba" x="730" y="296" width="58" height="26" rx="3"/><text class="c" x="759.0" y="314">A2</text>
+<rect class="bw" x="532" y="330" width="58" height="26" rx="3"/><text class="c" x="561.0" y="348">A3</text>
+<rect class="ba" x="598" y="330" width="58" height="26" rx="3"/><text class="c" x="627.0" y="348">A3</text>
+<rect class="bw" x="664" y="330" width="58" height="26" rx="3"/><text class="c" x="693.0" y="348">A4</text>
+<rect class="ba" x="730" y="330" width="58" height="26" rx="3"/><text class="c" x="759.0" y="348">A4</text>
+<rect class="bw" x="532" y="364" width="58" height="26" rx="3"/><text class="c" x="561.0" y="382">A5</text>
+<rect class="ba" x="598" y="364" width="58" height="26" rx="3"/><text class="c" x="627.0" y="382">A5</text>
+<rect class="bw" x="664" y="364" width="58" height="26" rx="3"/><text class="c" x="693.0" y="382">A6</text>
+<rect class="ba" x="730" y="364" width="58" height="26" rx="3"/><text class="c" x="759.0" y="382">A6</text>
+<text class="s" x="464" y="400"></text>
+<text class="c s" x="660" y="435">Útil 50 % · tolera 1 disco por espejo · penalidad 2</text>
+<rect class="bw" x="150" y="449" width="18" height="16" rx="3"/><text x="176" y="462">Dato</text>
+<rect class="ba" x="310" y="449" width="18" height="16" rx="3"/><text x="336" y="462">Copia espejo</text>
+<rect class="bB" x="470" y="449" width="18" height="16" rx="3"/><text x="496" y="462">Paridad P</text>
+<rect class="bA" x="630" y="449" width="18" height="16" rx="3"/><text x="656" y="462">Paridad Q (RAID 6)</text>
+</svg>
+    </div>
+    <figcaption>Cada fila es una franja. En RAID 5 y 6 la paridad rota entre discos para no crear un cuello de botella; RAID 6 agrega una segunda paridad independiente (Q) y por eso sobrevive a dos fallas. RAID 10 combina espejos (protección) con franjas (rendimiento).</figcaption>
+  </figure>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Nivel</th><th>Técnica</th><th class="num">Discos mín.</th><th>Capacidad útil</th><th>Fallas que tolera</th><th class="num">Penalidad escritura</th><th>Comentario</th></tr></thead>
+    <tbody>
+      <tr><td><b>RAID 0</b></td><td>Franjas</td><td class="num">2</td><td>100 %</td><td>Ninguna</td><td class="num">1</td><td>Sin protección. No se usa para datos de producción.</td></tr>
+      <tr><td><b>RAID 1</b></td><td>Espejo</td><td class="num">2</td><td>50 %</td><td>1 disco</td><td class="num">2</td><td>Simple; típico para arranque del SO.</td></tr>
+      <tr><td><b>RAID 5</b></td><td>Franjas + paridad simple</td><td class="num">3</td><td>(N−1)/N</td><td>1 disco</td><td class="num">4</td><td>Riesgoso con discos grandes: la reconstrucción es larga y una segunda falla destruye el arreglo.</td></tr>
+      <tr><td><b>RAID 6</b></td><td>Franjas + doble paridad</td><td class="num">4</td><td>(N−2)/N</td><td>2 discos</td><td class="num">6</td><td>Equilibrio habitual entre capacidad y protección.</td></tr>
+      <tr><td><b>RAID 10</b></td><td>Espejos con franjas</td><td class="num">4</td><td>50 %</td><td>1 por espejo (más si caen en espejos distintos)</td><td class="num">2</td><td>Mejor rendimiento de escritura; mayor costo por TB.</td></tr>
+      <tr><td><b>DRAID</b></td><td>RAID distribuido (IBM Storage Virtualize)</td><td class="num">—</td><td>Según nivel (DRAID 1, 5, 6) menos capacidad de reconstrucción</td><td>Según nivel</td><td class="num">—</td><td>Reparte datos, paridad y espacio de repuesto entre todos los discos; reconstruye mucho más rápido.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="tcap">Fuentes: diccionario SNIA (RAID, dual parity) y Redbooks de IBM FlashSystem. N = número de discos del grupo. Para el nivel de DRAID recomendado y sus límites por modelo, consulta la guía de mejores prácticas de la versión de IBM Storage Virtualize del cliente.</p>
+
+  <h3>3.5 Tiers</h3>
+  <div class="prose">
+    <p>Un <b>tier</b> (nivel) es un grupo de medios con rendimiento y costo similares: por ejemplo, flash NVMe para datos activos, SSD de mayor capacidad para datos tibios y HDD o cinta para datos fríos. El <b>tiering automático</b> mueve los bloques según su actividad; en IBM Storage Virtualize la función se llama <b>Easy Tier</b>. En arreglos completamente flash suele haber un solo tier y la decisión se traslada a la elección del tipo de módulo.</p>
+    <p>Relacionado: <b>IBM SAN Volume Controller (SVC)</b> es un equipo que se coloca entre los servidores y uno o varios arreglos, incluso de otros fabricantes, y los virtualiza con el mismo software de FlashSystem (IBM Storage Virtualize). Así se pueden aplicar Easy Tier, snapshots y replicación a almacenamiento existente, o migrar datos entre arreglos sin detener a los servidores.</p>
+  </div>
+
+  <h3>3.6 Servicios de datos</h3>
+  <div class="prose">
+    <ul>
+      <li><b>Thin provisioning</b> (aprovisionamiento delgado): el volumen se crea con un tamaño “prometido”, pero solo consume capacidad física cuando se escriben datos. Permite sobreasignar; el riesgo es quedarse sin espacio físico si no se monitorea.</li>
+      <li><b>Snapshot</b>: copia instantánea de un volumen en un punto del tiempo; al inicio no consume espacio y solo guarda los cambios posteriores. En IBM se implementa con FlashCopy, y <b>Safeguarded Copy</b> crea copias inmutables para recuperarse de ransomware.</li>
+      <li><b>Replicación</b>: copia de datos a otro arreglo, normalmente en otro sitio.
+        <ul>
+          <li><b>Síncrona</b>: la escritura se confirma al servidor solo cuando ambos sitios la tienen. Pérdida de datos cero (RPO = 0), pero agrega la latencia del enlace; limita la distancia (en IBM, Metro Mirror).</li>
+          <li><b>Asíncrona</b>: el sitio local confirma de inmediato y envía los cambios después. Permite grandes distancias con algunos segundos o minutos de posible pérdida (en IBM, Global Mirror y la replicación basada en políticas).</li>
+        </ul>
+      </li>
+      <li><b>RPO y RTO</b>: el RPO (<i>Recovery Point Objective</i>) es cuántos datos se pueden perder, medido en tiempo; el RTO (<i>Recovery Time Objective</i>) es en cuánto tiempo debe volver el servicio.</li>
+      <li><b>Compresión</b>: reduce el tamaño de cada bloque. <b>Deduplicación</b>: guarda una sola vez los bloques idénticos. La suma de ambos se expresa como <b>tasa de reducción de datos</b> (por ejemplo, 2:1).</li>
+    </ul>
+    <div class="note"><b>Cuidado con la reducción de datos.</b> La tasa real depende del tipo de dato: bases de datos ya comprimidas o cifradas, video e imágenes casi no se reducen. Nunca prometas una tasa sin medirla con la herramienta del fabricante o sin una garantía formal por escrito. Dimensiona la capacidad física primero y trata la reducción como un beneficio, no como base del cálculo, salvo que el cliente acepte el riesgo.</div>
+  </div>
+
+  <h3>3.7 Métricas de rendimiento</h3>
+  <div class="prose">
+    <ul>
+      <li><b>IOPS</b> (<i>Input/Output Operations Per Second</i>): número de lecturas y escrituras por segundo. Importa en cargas transaccionales.</li>
+      <li><b>Throughput</b> (rendimiento o ancho de banda): datos movidos por segundo, en MB/s o GB/s. Importa en backup, analítica y video.</li>
+      <li><b>Latencia</b>: tiempo que tarda una operación en completarse, en milisegundos (ms) o microsegundos (µs). Es la métrica que siente el usuario.</li>
+      <li><b>Tamaño de bloque</b> (de E/S): cuántos datos mueve cada operación. Bases transaccionales usan bloques pequeños (por ejemplo 8 KiB); backup y analítica usan bloques grandes (256 KiB a 1 MiB).</li>
+      <li><b>Mezcla lectura/escritura</b> y <b>patrón</b> aleatorio o secuencial.</li>
+    </ul>
+    <div class="formula">Throughput  = IOPS × tamaño de bloque
+IOPS back-end (RAID) = IOPS lectura + IOPS escritura × penalidad
+E/S en vuelo (ley de Little) = IOPS × latencia (en segundos)</div>
+    <h4>Ejemplo resuelto</h4>
+    <p>Una base de datos genera 20 000 IOPS en pico, 70 % lectura y 30 % escritura, con bloques de 8 KiB.</p>
+    <div class="formula">Lecturas  = 20 000 × 0,70 = 14 000 IOPS
+Escrituras = 20 000 × 0,30 =  6 000 IOPS
+
+Back-end RAID 10: 14 000 + 6 000 × 2 = 26 000 IOPS
+Back-end RAID 5:  14 000 + 6 000 × 4 = 38 000 IOPS
+Back-end RAID 6:  14 000 + 6 000 × 6 = 50 000 IOPS
+
+Throughput = 20 000 × 8 KiB = 160 000 KiB/s ≈ 156 MiB/s ≈ 164 MB/s
+Con latencia de 0,5 ms: 20 000 × 0,0005 = 10 operaciones en vuelo</div>
+    <p>Conclusión: el mismo requerimiento del cliente exige casi el doble de capacidad de E/S en los discos si se elige RAID 6 en vez de RAID 10. En arreglos tradicionales con HDD esto define cuántos discos hacen falta. En arreglos flash modernos la caché de escritura, la escritura de franjas completas y el propio hardware reducen el impacto real, por lo que el modelo es conservador: para FlashSystem el dimensionamiento formal se hace con la herramienta IBM Storage Modeller (StorM).</p>
+    <div class="note"><b>Sobre cifras de referencia.</b> Valores como “IOPS por disco HDD” o “latencia típica de un SSD” circulan como reglas prácticas, pero dependen del modelo y la carga. Usa las fichas técnicas oficiales del modelo concreto o la herramienta del fabricante; esta guía no fija esas cifras porque no hay una fuente oficial única que las respalde.</div>
+  </div>
+
+  <h3>3.8 Aplicación en preventa</h3>
+  <div class="prose">
+    <h4>Qué preguntar al cliente</h4>
+    <ul>
+      <li>¿Cuánta capacidad usan hoy y cuánto ha crecido en los últimos 12 a 24 meses?</li>
+      <li>¿Qué aplicaciones usan el almacenamiento y qué tipo de acceso necesita cada una (bloque, archivo, objeto)?</li>
+      <li>¿Qué IOPS, throughput y latencia tienen en pico? ¿En qué horario?</li>
+      <li>¿Qué RPO y RTO necesitan? ¿Hay un segundo sitio?</li>
+      <li>¿Cuántos snapshots y por cuánto tiempo los retienen?</li>
+    </ul>
+    <h4>Qué datos levantar</h4>
+    <ul>
+      <li>Reportes de rendimiento del arreglo actual (ideal: un mes con cierres de periodo).</li>
+      <li>Desde el servidor: iostat o nmon en AIX/Linux, reportes AWR en Oracle, métricas de datastores en VMware.</li>
+      <li>Capacidad asignada frente a capacidad realmente escrita.</li>
+    </ul>
+    <h4>Errores comunes</h4>
+    <ul>
+      <li>Confundir TB y TiB, o capacidad bruta, útil y efectiva.</li>
+      <li>Dimensionar solo por capacidad e ignorar IOPS y latencia.</li>
+      <li>Usar el promedio diario de IOPS en vez del pico.</li>
+      <li>Olvidar el espacio de snapshots, de replicación y de crecimiento.</li>
+      <li>Prometer una tasa de reducción de datos sin medición.</li>
+    </ul>
+  </div>
+
+  <h3>3.9 Autoevaluación</h3>
+  <div class="prose quiz">
+    <ol>
+      <li>¿Qué diferencia hay entre un NAS y una SAN en cuanto al tipo de acceso?</li>
+      <li>Calcula la capacidad útil de 10 discos de 3,84 TB en RAID 6 y en RAID 10 (sin repuestos).</li>
+      <li>¿Por qué RAID 5 se considera riesgoso con discos de gran capacidad?</li>
+      <li>Una aplicación hace 5 000 IOPS con bloque de 64 KiB. ¿Qué throughput genera?</li>
+      <li>¿Qué diferencia hay entre replicación síncrona y asíncrona en RPO y distancia?</li>
+      <li>¿Qué riesgo tiene el thin provisioning y cómo se controla?</li>
+      <li>¿Por qué no conviene basar el sizing en la tasa de deduplicación?</li>
+      <li>¿Qué métrica percibe el usuario final de una base de datos transaccional?</li>
+    </ol>
+    <details class="ans"><summary>Respuestas</summary><div><ol>
+      <li>El NAS entrega archivos (NFS/SMB) sobre la LAN y administra el sistema de archivos; la SAN entrega bloques (LUN) y el servidor administra su propio sistema de archivos.</li>
+      <li>RAID 6: (10 − 2) × 3,84 = 30,72 TB. RAID 10: 10 × 3,84 / 2 = 19,2 TB.</li>
+      <li>Porque la reconstrucción de un disco grande tarda mucho y, mientras tanto, el arreglo no tiene protección: una segunda falla o un error de lectura provoca pérdida de datos.</li>
+      <li>5 000 × 64 KiB = 320 000 KiB/s ≈ 312,5 MiB/s ≈ 328 MB/s.</li>
+      <li>La síncrona da RPO = 0 pero suma la latencia del enlace a cada escritura, por lo que se limita a distancias cortas; la asíncrona permite grandes distancias con un RPO mayor que cero.</li>
+      <li>Quedarse sin capacidad física cuando los volúmenes crecen más de lo previsto. Se controla con alertas de umbral, monitoreo de la capacidad física y una política de compra anticipada.</li>
+      <li>Porque depende del tipo de dato y puede ser mucho menor a la esperada (por ejemplo, con datos cifrados), dejando al cliente sin capacidad.</li>
+      <li>La latencia.</li>
+    </ol></div></details>
+  </div>
+
+  <h3>3.10 Lecturas recomendadas</h3>
+  <ul class="reads">
+    <li><span class="src">IBM Redbooks</span><a href="https://www.redbooks.ibm.com/abstracts/sg245470.html">Introduction to Storage Area Networks (SG24-5470)</a>: capítulos 1 y 2.</li>
+    <li><span class="src">SNIA</span><a href="https://www.snia.org/education/online-dictionary">SNIA Online Dictionary</a>: busca RAID, thin provisioning, snapshot, RPO, RTO. Ejemplo: <a href="https://www.snia.org/education/online-dictionary/term/raid-6">RAID 6</a>.</li>
+    <li><span class="src">IBM Redbooks</span><a href="https://redbooks.ibm.com/Redbooks.nsf/RedpieceAbstracts/sg248503.html?Open">IBM FlashSystem Best Practices and Performance Guidelines (SG24-8503)</a>: capítulos de pools, DRAID y reducción de datos.</li>
+    <li><span class="src">IBM Redbooks</span><a href="https://www.redbooks.ibm.com/redpieces/pdfs/sg248604.pdf">The Definitive Guide to IBM Storage FlashSystem and AIX Integration (SG24-8604)</a>: versión preliminar con IBM Storage Virtualize 9.1.3.</li>
+  </ul>
+</section>
+
+<section class="area" id="s4">
+  <div class="eyebrow"><b>Semana 4</b><span>lun 9 – dom 15 nov 2026</span><span>Área 4</span></div>
+  <h2>Redes SAN: Fibre Channel, iSCSI, zoning y multipathing</h2>
+
+  <div class="plan">
+    <div><h4>Temas</h4><ul><li>Componentes de Fibre Channel y WWN</li><li>Fabric A/B y zoning</li><li>LUN masking y multipathing</li><li>iSCSI y NVMe-oF</li></ul></div>
+    <div><h4>Actividades</h4><ul><li>Lectura: capítulos de Fibre Channel y zoning de <em>Introduction to Storage Area Networks</em>; página de MPIO de AIX</li><li>Redibujar a mano: Fig. 10 y 11</li><li>Ejercicio: escribir la tabla de zonas de dos servidores y un arreglo de dos controladoras en ambos fabrics</li></ul></div>
+    <div><h4>Entregable</h4><p>Diseño de SAN de una página: diagrama de fabric A/B, conteo de puertos por switch, tabla de alias y zonas, y número de rutas por volumen por servidor.</p></div>
+  </div>
+
+  <div class="obj"><h4>Objetivos de aprendizaje</h4><ol>
+    <li>Nombrar los componentes de una SAN Fibre Channel y el papel de cada uno.</li>
+    <li>Explicar qué es un WWN y cómo se usa en zoning y en el mapeo de volúmenes.</li>
+    <li>Diseñar un fabric doble (A/B) sin puntos únicos de falla.</li>
+    <li>Diferenciar zoning, LUN masking y multipathing.</li>
+    <li>Comparar Fibre Channel, iSCSI y NVMe-oF para una propuesta.</li>
+  </ol></div>
+
+  <h3>4.1 Fibre Channel: componentes</h3>
+  <div class="prose">
+    <p><b>Fibre Channel</b> (FC) es una tecnología de red diseñada para almacenamiento: entrega tramas en orden, sin pérdidas y con control de flujo por créditos. Sobre ella viajan comandos SCSI (protocolo FCP) o comandos NVMe (FC-NVMe). Sus componentes:</p>
+    <ul>
+      <li><b>HBA</b>: tarjeta FC en el servidor. Cada puerto es un iniciador: el que pide datos.</li>
+      <li><b>Puertos del arreglo</b>: los destinos (<i>targets</i>), en las controladoras del almacenamiento.</li>
+      <li><b>Switch FC</b>: conecta iniciadores y destinos. Un <b>director</b> es un switch modular de alta disponibilidad para cientos de puertos.</li>
+      <li><b>Fabric</b>: uno o varios switches interconectados que comparten servicios (nombres, zoning). Los enlaces entre switches del mismo fabric se llaman <b>ISL</b> (<i>Inter-Switch Link</i>).</li>
+      <li><b>WWN</b> (<i>World Wide Name</i>): identificador único de 64 bits, parecido a una MAC. Hay WWNN (del nodo, el dispositivo) y <b>WWPN</b> (de cada puerto). El WWPN es el que se usa para zoning y para mapear volúmenes. Ejemplo: <code>10:00:00:00:c9:1a:2b:01</code>.</li>
+      <li><b>SFP</b> (<i>Small Form-factor Pluggable</i>): transceptor óptico que se inserta en cada puerto; define velocidad y distancia. Debe coincidir con la velocidad del switch y el tipo de fibra.</li>
+    </ul>
+    <p>Al conectarse, cada puerto hace un <b>login</b> en el fabric (FLOGI) y recibe una dirección de 24 bits (FCID). Después se registra en el <b>servidor de nombres</b>, que es como el directorio del fabric.</p>
+  </div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Velocidad FC</th><th>Generación (Brocade)</th><th class="num">Throughput (MB/s, full dúplex)</th><th class="num">Disponible desde</th><th>Comentario</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">16GFC</td><td>Gen 5</td><td class="num">3 200</td><td class="num">2011</td><td>Base instalada antigua</td></tr>
+      <tr><td class="mono">32GFC</td><td>Gen 6</td><td class="num">6 400</td><td class="num">2016</td><td>Muy común en clientes actuales</td></tr>
+      <tr><td class="mono">64GFC</td><td>Gen 7</td><td class="num">12 800</td><td class="num">2020</td><td>Estándar en equipos nuevos de los últimos años</td></tr>
+      <tr><td class="mono">128GFC</td><td>Gen 8</td><td class="num">24 850</td><td class="num">2024–2025</td><td>Brocade anunció su portafolio Gen 8 (X8, G820) en noviembre de 2025</td></tr>
+    </tbody>
+  </table></div>
+  <p class="tcap">Fuente: FCIA Speedmap v24 (2023) y comunicado de Broadcom (19 nov 2025). Los valores son la suma de ambas direcciones; por dirección es la mitad (por ejemplo, 32GFC ≈ 3 200 MB/s en cada sentido). Por regla del roadmap de FCIA, cada generación es compatible con las dos anteriores; confirma en la matriz del fabricante.</p>
+
+  <h3>4.2 Redundancia: fabric A y fabric B</h3>
+  <div class="prose">
+    <p>La práctica estándar es construir <b>dos fabrics físicamente independientes</b>, A y B, sin enlaces entre ellos. Cada servidor tiene al menos un puerto en cada fabric, y cada controladora del arreglo también. Así, un error de configuración, una actualización fallida o la caída de un switch afecta solo a un fabric; el otro sigue dando servicio.</p>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 10</span>Fabric A/B redundante: HBA duales, dos switches y dos controladoras</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 440" role="img" aria-label="Dos servidores con dos HBA conectados a dos fabrics independientes y a dos controladoras de almacenamiento">
+      <rect class="ba" x="60" y="20" width="260" height="96" rx="8"/><text class="c h" x="190" y="44">Servidor 1 (BD)</text>
+      <rect class="bA" x="80" y="68" width="100" height="30" rx="4"/><text class="c" x="130" y="88">HBA 1</text>
+      <rect class="bB" x="200" y="68" width="100" height="30" rx="4"/><text class="c" x="250" y="88">HBA 2</text>
+      <rect class="ba" x="560" y="20" width="260" height="96" rx="8"/><text class="c h" x="690" y="44">Servidor 2 (App)</text>
+      <rect class="bA" x="580" y="68" width="100" height="30" rx="4"/><text class="c" x="630" y="88">HBA 1</text>
+      <rect class="bB" x="700" y="68" width="100" height="30" rx="4"/><text class="c" x="750" y="88">HBA 2</text>
+
+      <rect class="bA" x="90" y="190" width="280" height="48" rx="6"/><text class="c h" x="230" y="212">Switch FC · Fabric A</text><text class="c m" x="230" y="228">dominio 1</text>
+      <rect class="bB" x="510" y="190" width="280" height="48" rx="6"/><text class="c h" x="650" y="212">Switch FC · Fabric B</text><text class="c m" x="650" y="228">dominio 2</text>
+      <text class="c s" x="440" y="208">sin enlace</text><text class="c s" x="440" y="224">entre fabrics</text>
+
+      <path class="lA" d="M130,98 L190,190 M630,98 L280,190"/>
+      <path class="lB" d="M250,98 L600,190 M750,98 L700,190"/>
+
+      <rect class="bw" x="120" y="300" width="640" height="128" rx="8"/><text class="c h" x="440" y="414">Arreglo de almacenamiento (p. ej., IBM FlashSystem)</text>
+      <rect class="b" x="150" y="322" width="270" height="62" rx="6"/><text class="c h" x="285" y="358">Controladora (nodo) 1</text>
+      <rect class="b" x="460" y="322" width="270" height="62" rx="6"/><text class="c h" x="595" y="358">Controladora (nodo) 2</text>
+      <rect class="bA" x="182" y="314" width="16" height="16" rx="2"/><rect class="bB" x="362" y="314" width="16" height="16" rx="2"/>
+      <rect class="bA" x="492" y="314" width="16" height="16" rx="2"/><rect class="bB" x="672" y="314" width="16" height="16" rx="2"/>
+      <path class="lA" d="M190,314 L180,238 M500,314 L290,238"/>
+      <path class="lB" d="M370,314 L590,238 M680,314 L710,238"/>
+    </svg>
+    </div>
+    <figcaption>Cada servidor llega al arreglo por dos fabrics y cada fabric llega a ambas controladoras. Con un puerto por fabric en cada controladora, cada volumen tiene 4 rutas (2 HBA × 2 controladoras). La falla de un HBA, un switch o una controladora deja rutas activas.</figcaption>
+  </figure>
+
+  <h3>4.3 Zoning</h3>
+  <div class="prose">
+    <p>El <b>zoning</b> define, dentro de un fabric, qué puertos pueden verse entre sí. Sin zoning, todos los iniciadores verían todos los destinos, con riesgos de seguridad y de inestabilidad. Conceptos:</p>
+    <ul>
+      <li><b>Alias</b>: nombre legible para un WWPN (por ejemplo, <code>srv1_hba1</code>).</li>
+      <li><b>Zona</b>: grupo de miembros que pueden comunicarse.</li>
+      <li><b>Configuración</b> (<i>zoneset</i>): conjunto de zonas; solo una está activa por fabric.</li>
+      <li><b>Zoning por WWPN</b> (el más usado): sigue al dispositivo aunque se cambie de puerto en el switch. <b>Zoning por puerto</b>: se basa en la posición física (dominio, puerto).</li>
+      <li><b>Iniciador único</b>: cada zona contiene un solo iniciador y uno o varios destinos. Es la práctica recomendada porque evita que los servidores interfieran entre sí. Brocade ofrece <i>peer zoning</i> y Cisco <i>smart zoning</i> para simplificar este modelo.</li>
+    </ul>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 11</span>Ejemplo de zoning de iniciador único en el fabric A</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 350" role="img" aria-label="Tabla visual de alias, zonas y destinos en un fabric">
+      <text class="t" x="20" y="24">Iniciadores (HBA)</text><text class="t" x="330" y="24">Zonas</text><text class="t" x="640" y="24">Destinos</text>
+      <rect class="ba" x="20" y="60" width="220" height="56" rx="6"/><text x="32" y="83" class="h">srv1_hba1</text><text x="32" y="102" class="m">10:00:00:00:c9:1a:2b:01</text>
+      <rect class="ba" x="20" y="170" width="220" height="56" rx="6"/><text x="32" y="193" class="h">srv2_hba1</text><text x="32" y="212" class="m">10:00:00:00:c9:1a:2b:02</text>
+      <rect class="bA" x="330" y="40" width="220" height="56" rx="6"/><text x="342" y="63" class="h">z_srv1_fs</text><text x="342" y="82" class="m">srv1_hba1 + fs_n1_p1 + fs_n2_p1</text>
+      <rect class="bE" x="330" y="130" width="220" height="56" rx="6"/><text x="342" y="153" class="h">z_srv2_fs</text><text x="342" y="172" class="m">srv2_hba1 + fs_n1_p1 + fs_n2_p1</text>
+      <rect class="bB" x="330" y="220" width="220" height="56" rx="6"/><text x="342" y="243" class="h">z_srv1_lto</text><text x="342" y="262" class="m">srv1_hba1 + lto_drv1</text>
+      <rect class="bw" x="640" y="40" width="220" height="56" rx="6"/><text x="652" y="63" class="h">fs_n1_p1</text><text x="652" y="82" class="m">50:05:07:68:10:11:22:01</text>
+      <rect class="bw" x="640" y="130" width="220" height="56" rx="6"/><text x="652" y="153" class="h">fs_n2_p1</text><text x="652" y="172" class="m">50:05:07:68:10:11:22:05</text>
+      <rect class="bw" x="640" y="220" width="220" height="56" rx="6"/><text x="652" y="243" class="h">lto_drv1</text><text x="652" y="262" class="m">50:05:07:63:0a:00:01:10</text>
+      <path class="lA" d="M240,82 L330,68 M550,62 L640,68 M550,74 L640,152"/>
+      <path class="lE" d="M240,198 L330,158 M550,152 L640,74 M550,164 L640,160"/>
+      <path class="lB" d="M240,94 L330,248 M550,248 L640,248"/>
+      <rect class="b" x="20" y="298" width="840" height="40" rx="6"/>
+      <text x="34" y="323"><tspan class="h">Configuración activa</tspan> <tspan class="m">cfg_fabricA = z_srv1_fs ; z_srv2_fs ; z_srv1_lto</tspan></text>
+    </svg>
+    </div>
+    <figcaption>Cada zona tiene un solo iniciador: srv1 y srv2 ven ambas controladoras, pero no se ven entre sí. srv1 tiene además una zona separada hacia la unidad de cinta para backup. En el fabric B se repite el esquema con los HBA 2. Los WWPN son ilustrativos.</figcaption>
+  </figure>
+
+  <h3>4.4 LUN masking y mapeo de volúmenes</h3>
+  <div class="prose">
+    <p>El zoning decide qué puertos se ven en la red. El <b>LUN masking</b> decide, en el arreglo, qué volúmenes entrega a cada servidor. En IBM Storage Virtualize se crea un objeto <b>host</b> con los WWPN del servidor y se le <b>mapean</b> los volúmenes. Ambos controles se usan juntos.</p>
+    <div class="analogy"><b>Analogía</b>El zoning es el control de acceso del edificio: decide quién puede entrar a qué piso. El LUN masking es la llave del departamento: aunque estés en el piso correcto, solo abres la puerta que te asignaron.</div>
+    <p>Un <b>LUN</b> (<i>Logical Unit Number</i>) es, estrictamente, el número con que el servidor identifica cada volumen entregado; en la práctica se usa “LUN” como sinónimo de volumen de bloque.</p>
+  </div>
+
+  <h3>4.5 Multipathing</h3>
+  <div class="prose">
+    <p>Con fabric A/B el servidor ve el mismo volumen por varias rutas; sin software adicional lo vería como varios discos distintos. El <b>multipathing</b> agrupa esas rutas en un solo dispositivo, reparte la carga y conmuta si una ruta falla.</p>
+    <ul>
+      <li>AIX: <b>MPIO</b> (<i>Multiple Path I/O</i>) con el módulo de control de rutas (PCM) incluido en el sistema.</li>
+      <li>Linux: DM-Multipath. VMware ESXi: NMP (<i>Native Multipathing Plug-in</i>).</li>
+      <li><b>ALUA</b> (<i>Asymmetric Logical Unit Access</i>): el arreglo indica qué rutas son preferidas (normalmente las de la controladora dueña del volumen) para que el servidor las use primero.</li>
+    </ul>
+    <p>Más rutas no siempre es mejor: cada ruta consume recursos y alarga los tiempos de recuperación. IBM dedica secciones específicas al número de rutas por volumen en sus Redbooks de FlashSystem; la configuración habitual es de 4 rutas por volumen, pero verifica la recomendación vigente para la versión de IBM Storage Virtualize y el sistema operativo del cliente.</p>
+  </div>
+
+  <h3>4.6 iSCSI</h3>
+  <div class="prose">
+    <p><b>iSCSI</b> (<i>Internet Small Computer Systems Interface</i>, RFC 7143) transporta comandos SCSI dentro de TCP/IP sobre Ethernet, normalmente por el puerto TCP 3260. Los iniciadores y destinos se identifican con nombres IQN (<i>iSCSI Qualified Name</i>). Usa la infraestructura Ethernet, pero en producción debe ir en una red o VLAN dedicada, con dos rutas físicas, MTU coherente en todo el camino y autenticación CHAP (<i>Challenge-Handshake Authentication Protocol</i>) cuando aplique.</p>
+  </div>
+
+  <h3>4.7 NVMe-oF</h3>
+  <div class="prose">
+    <p><b>NVMe-oF</b> (<i>NVMe over Fabrics</i>) extiende el protocolo NVMe por una red, manteniendo sus múltiples colas paralelas y su baja latencia. Hay tres transportes principales: <b>FC-NVMe</b> (sobre Fibre Channel, reutiliza la SAN existente), <b>NVMe/RDMA</b> (por ejemplo RoCE v2, <i>RDMA over Converged Ethernet</i>) y <b>NVMe/TCP</b> (sobre Ethernet estándar). Los volúmenes se llaman <i>namespaces</i> y los dispositivos se identifican con NQN (<i>NVMe Qualified Name</i>). Antes de proponerlo, valida soporte de sistema operativo, HBA y arreglo en la matriz de interoperabilidad de IBM (SSIC, <i>System Storage Interoperation Center</i>).</p>
+  </div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Criterio</th><th>Fibre Channel (FCP)</th><th>iSCSI</th><th>NVMe-oF</th></tr></thead>
+    <tbody>
+      <tr><td>Red</td><td>Dedicada FC (switches, HBA, SFP propios)</td><td>Ethernet IP</td><td>FC, Ethernet con RDMA o Ethernet con TCP</td></tr>
+      <tr><td>Protocolo de comandos</td><td>SCSI</td><td>SCSI</td><td>NVMe</td></tr>
+      <tr><td>Latencia</td><td>Baja y muy predecible</td><td>Mayor; depende de la LAN y de la carga de CPU</td><td>La más baja de las tres con el transporte adecuado</td></tr>
+      <tr><td>Costo de entrada</td><td>Alto (infraestructura propia)</td><td>Bajo (reusa switches y NIC)</td><td>Medio; FC-NVMe reusa la SAN si es compatible</td></tr>
+      <tr><td>Habilidades del cliente</td><td>Requiere personal con experiencia en SAN</td><td>Equipo de redes IP</td><td>Más nuevo; menos experiencia en el mercado</td></tr>
+      <tr><td>Uso típico</td><td>BD críticas, Power, grandes entornos virtualizados</td><td>Medianas empresas, sucursales, entornos x86</td><td>Cargas que buscan mínima latencia sobre flash NVMe</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>4.8 Aplicación en preventa</h3>
+  <div class="prose">
+    <h4>Qué preguntar al cliente</h4>
+    <ul>
+      <li>¿Tienen SAN FC? ¿Marca, modelo, velocidad y cuántos puertos libres por fabric?</li>
+      <li>¿Los puertos libres tienen licencia activa y SFP instalado?</li>
+      <li>¿Quién administra el zoning? ¿Tienen una convención de nombres?</li>
+      <li>¿Qué versiones de sistema operativo, hipervisor y firmware de HBA usan?</li>
+      <li>¿Hay replicación entre sitios por FC (requiere enlaces de larga distancia) o por IP?</li>
+    </ul>
+    <h4>Qué datos levantar</h4>
+    <ul>
+      <li>Inventario de puertos por fabric: usados, libres, licenciados, velocidad.</li>
+      <li>WWPN de los servidores nuevos (se obtienen después de instalarlos, pero el número de puertos debe estar en la propuesta).</li>
+      <li>Distancias de cableado y tipo de fibra existente.</li>
+    </ul>
+    <h4>Errores comunes</h4>
+    <ul>
+      <li>Proponer un solo switch FC: es un punto único de falla.</li>
+      <li>Contar los puertos de servidores y olvidar los del arreglo, la cinta o los ISL.</li>
+      <li>Omitir SFP, licencias de puertos o cables de fibra en la cotización.</li>
+      <li>No validar la compatibilidad en SSIC antes de comprometer una versión de sistema operativo o de HBA.</li>
+      <li>Crear zonas con varios iniciadores “para ahorrar tiempo”.</li>
+    </ul>
+  </div>
+
+  <h3>4.9 Autoevaluación</h3>
+  <div class="prose quiz">
+    <ol>
+      <li>¿Qué es un WWPN y en qué dos lugares se usa?</li>
+      <li>¿Por qué no se conectan con ISL los switches del fabric A y del fabric B?</li>
+      <li>¿Qué diferencia hay entre zoning y LUN masking?</li>
+      <li>Un servidor con 2 HBA (uno por fabric) se conecta a un arreglo de 2 controladoras con un puerto por fabric cada una. ¿Cuántas rutas ve por volumen?</li>
+      <li>¿Qué pasa si se presenta un volumen por cuatro rutas y el servidor no tiene multipathing?</li>
+      <li>¿Qué ventajas y desventajas tiene iSCSI frente a FC?</li>
+      <li>¿Qué transportes admite NVMe-oF?</li>
+    </ol>
+    <details class="ans"><summary>Respuestas</summary><div><ol>
+      <li>Es el World Wide Port Name, identificador único de 64 bits de un puerto FC. Se usa en el zoning del switch y en la definición del host en el arreglo (LUN masking).</li>
+      <li>Para que sean independientes: un error de configuración, una falla de software o una tormenta de tráfico en un fabric no se propaga al otro.</li>
+      <li>El zoning controla en el switch qué puertos se ven; el LUN masking controla en el arreglo qué volúmenes recibe cada host.</li>
+      <li>4 rutas: 2 HBA × 2 controladoras.</li>
+      <li>El sistema operativo vería cuatro discos distintos; si se escriben como independientes se puede corromper la información, y no habría conmutación ante fallas.</li>
+      <li>Ventajas: menor costo, usa Ethernet y habilidades de red IP existentes. Desventajas: latencia más variable, depende del diseño de la LAN y consume CPU del servidor si no hay descarga en la tarjeta.</li>
+      <li>Fibre Channel (FC-NVMe), RDMA (por ejemplo RoCE v2) y TCP.</li>
+    </ol></div></details>
+  </div>
+
+  <h3>4.10 Lecturas recomendadas</h3>
+  <ul class="reads">
+    <li><span class="src">IBM Redbooks</span><a href="https://www.redbooks.ibm.com/abstracts/sg245470.html">Introduction to Storage Area Networks (SG24-5470)</a>: capítulos de Fibre Channel, topologías y zoning.</li>
+    <li><span class="src">IBM Docs</span><a href="https://www.ibm.com/docs/en/aix/7.3.0?topic=management-multiple-path-io">AIX 7.3: Multiple Path I/O</a> y <a href="https://www.ibm.com/support/pages/ibm-aix-mpio-best-practices-and-considerations">IBM AIX MPIO Best Practices and Considerations</a>.</li>
+    <li><span class="src">FCIA</span><a href="https://fibrechannel.org/wp-content/uploads/2023/07/FCIA-Speedmap-V24-July-2023.pdf">Fibre Channel Speedmap v24</a></li>
+    <li><span class="src">Broadcom</span><a href="https://investors.broadcom.com/news-releases/news-release-details/broadcom-introduces-worlds-first-quantum-safe-gen-8-128g-san">Anuncio del portafolio Brocade Gen 8 128G</a></li>
+    <li><span class="src">IETF</span><a href="https://www.rfc-editor.org/rfc/rfc7143">RFC 7143: iSCSI Protocol (Consolidated)</a>: secciones 1 a 3.</li>
+    <li><span class="src">NVM Express</span><a href="https://nvmexpress.org/specification/nvme-of-specification/">NVMe over Fabrics Specification</a> (organismo que publica el estándar; la página indica que hoy es referencia histórica porque el contenido se integró a la familia de especificaciones NVMe 2.x).</li>
+  </ul>
+</section>
+
+<section class="area" id="s5">
+  <div class="eyebrow"><b>Semana 5</b><span>lun 16 – dom 22 nov 2026</span><span>Área 5</span></div>
+  <h2>Aplicaciones y cómo se traducen en sizing</h2>
+
+  <div class="plan">
+    <div><h4>Temas</h4><ul><li>Perfil de recursos por tipo de aplicación</li><li>Recorrido de una transacción</li><li>Bases de datos, ERP, virtualización y backup</li><li>Método de sizing</li></ul></div>
+    <div><h4>Actividades</h4><ul><li>Lectura: guía de ayuda de IBM Storage Modeller (introducción) y repaso de 3.7</li><li>Redibujar a mano: Fig. 12</li><li>Ejercicio: completar la hoja de levantamiento (5.6) con datos de un cliente real o de un reporte HMC Scanner/nmon que ya tengas</li></ul></div>
+    <div><h4>Entregable</h4><p>Hoja de levantamiento llena y un cálculo de núcleos, memoria, IOPS y capacidad a 3 años, con la lista de supuestos explícitos.</p></div>
+  </div>
+
+  <div class="obj"><h4>Objetivos de aprendizaje</h4><ol>
+    <li>Describir qué recursos consume cada tipo de aplicación y cuál es su métrica crítica.</li>
+    <li>Seguir una transacción desde el usuario hasta el disco y ubicar dónde se suma latencia.</li>
+    <li>Calcular requerimientos futuros a partir de datos medidos, crecimiento y utilización objetivo.</li>
+    <li>Armar una hoja de levantamiento de requerimientos.</li>
+  </ol></div>
+
+  <h3>5.1 Perfil de consumo por tipo de aplicación</h3>
+  <div class="prose"><p>Las semanas anteriores trataron los recursos por separado. La aplicación es la que los combina: cada tipo de carga presiona más un recurso que otro, y por eso no existe un sizing genérico.</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Carga</th><th>CPU</th><th>Memoria</th><th>Red LAN</th><th>Storage</th><th>Métrica crítica</th></tr></thead>
+    <tbody>
+      <tr><td><b>BD transaccional (OLTP)</b></td><td>Alta, muchas consultas cortas</td><td>Alta: caché de datos</td><td>Media, muchas conexiones</td><td>E/S aleatoria, bloques pequeños, escrituras síncronas del log</td><td>Latencia y IOPS</td></tr>
+      <tr><td><b>BD analítica (OLAP / DW)</b></td><td>Muy alta en consultas largas</td><td>Muy alta</td><td>Baja a media</td><td>Lecturas secuenciales, bloques grandes</td><td>Throughput (GB/s)</td></tr>
+      <tr><td><b>ERP (p. ej., SAP)</b></td><td>Alta en servidores de aplicación</td><td>Alta; en SAP HANA, determinante</td><td>Media</td><td>Depende de su BD (OLTP + procesos batch)</td><td>Tiempo de respuesta y ventana batch</td></tr>
+      <tr><td><b>Virtualización</b></td><td>Suma de todas las VM</td><td>Suele ser el primer límite</td><td>Media; picos en migraciones</td><td>Mezcla aleatoria de muchas VM</td><td>Consolidación sin contención</td></tr>
+      <tr><td><b>Backup</b></td><td>Baja a media (más con deduplicación)</td><td>Media</td><td>Alta en la ventana</td><td>Secuencial, bloques grandes; capacidad para retención</td><td>Throughput y ventana</td></tr>
+    </tbody>
+  </table></div>
+  <p class="tcap">OLTP: <i>Online Transaction Processing</i>. OLAP: <i>Online Analytical Processing</i>. DW: <i>Data Warehouse</i>. Perfiles orientativos: confirma siempre con datos medidos del cliente.</p>
+
+  <h3>5.2 Recorrido de una transacción</h3>
+  <div class="prose">
+    <p>El siguiente diagrama une las cinco áreas. Un usuario registra un pedido; la base de datos procesa en CPU y memoria, pero el <i>commit</i> solo termina cuando el registro de transacciones (en Oracle, el <b>redo log</b>) está escrito en almacenamiento persistente. Por eso la latencia de escritura de la SAN y del arreglo se siente directamente en el tiempo de respuesta.</p>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 12</span>Flujo de una transacción de base de datos: del usuario al disco</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 450" role="img" aria-label="Diagrama de secuencia de una transacción desde el usuario hasta el almacenamiento">
+      <rect class="bw" x="10" y="14" width="120" height="40" rx="6"/><text class="c h" x="70" y="39">Usuario</text>
+      <rect class="bE" x="155" y="14" width="120" height="40" rx="6"/><text class="c h" x="215" y="39">Red LAN</text>
+      <rect class="ba" x="305" y="14" width="120" height="40" rx="6"/><text class="c h" x="365" y="39">Servidor app</text>
+      <rect class="ba" x="460" y="14" width="120" height="40" rx="6"/><text class="c h" x="520" y="39">Servidor BD</text>
+      <rect class="bA" x="620" y="14" width="120" height="40" rx="6"/><text class="c h" x="680" y="39">SAN</text>
+      <rect class="bB" x="755" y="14" width="115" height="40" rx="6"/><text class="c h" x="812" y="39">Storage</text>
+      <path class="life" d="M70,54 V440 M215,54 V440 M365,54 V440 M520,54 V440 M680,54 V440 M812,54 V440"/>
+
+      <line class="lE" x1="70" y1="96" x2="361" y2="96" marker-end="url(#arE)"/><circle class="dot" cx="215" cy="96" r="3.5"/>
+      <text class="halo" x="80" y="88">1 · Petición del usuario (HTTPS)</text>
+      <line class="lE" x1="365" y1="136" x2="516" y2="136" marker-end="url(#arE)"/>
+      <text class="halo" x="372" y="128">2 · SQL: INSERT pedido</text>
+      <rect class="ba" x="512" y="152" width="16" height="56" rx="2"/>
+      <text class="halo" x="536" y="172">3 · La CPU ejecuta el SQL y modifica</text>
+      <text class="halo" x="536" y="190">bloques en la caché de datos (RAM)</text>
+      <line class="lA" x1="520" y1="236" x2="808" y2="236" marker-end="url(#arA)"/><circle class="dot" cx="680" cy="236" r="3.5"/>
+      <text class="halo" x="530" y="228">4 · COMMIT: escritura síncrona del redo log</text>
+      <rect class="bB" x="804" y="250" width="16" height="44" rx="2"/>
+      <text class="e halo" x="796" y="266">5 · guarda en caché protegida</text>
+      <text class="e halo" x="796" y="284">(espejo entre controladoras)</text>
+      <line class="lA" x1="812" y1="316" x2="524" y2="316" marker-end="url(#arA)"/><circle class="dot" cx="680" cy="316" r="3.5"/>
+      <text class="halo" x="535" y="308">6 · confirma la escritura</text>
+      <line class="lE" x1="520" y1="356" x2="369" y2="356" marker-end="url(#arE)"/>
+      <text class="halo" x="380" y="348">7 · commit correcto</text>
+      <line class="lE" x1="365" y1="396" x2="74" y2="396" marker-end="url(#arE)"/><circle class="dot" cx="215" cy="396" r="3.5"/>
+      <text class="halo" x="80" y="388">8 · “Pedido registrado”</text>
+      <line class="ln dash" x1="520" y1="430" x2="808" y2="430" marker-end="url(#ar)"/>
+      <text class="s halo" x="530" y="423">Más tarde: escritura asíncrona de bloques de datos</text>
+    </svg>
+    </div>
+    <figcaption>El usuario espera la suma de los pasos 1 a 8. Los pasos 4 a 6 (escritura del log a través de la SAN) están en la ruta crítica de cada commit; la escritura de los bloques de datos ocurre después y no bloquea al usuario. Si el dato a leer no está en memoria, se agrega una lectura por la SAN en el paso 3.</figcaption>
+  </figure>
+
+  <h3>5.3 Bases de datos</h3>
+  <div class="prose">
+    <ul>
+      <li><b>Caché de datos en memoria</b> (en Oracle, <i>buffer cache</i> dentro de la SGA, <i>System Global Area</i>): cuanto más grande, menos lecturas físicas. Más memoria puede reducir IOPS de lectura.</li>
+      <li><b>Log de transacciones</b>: escrituras pequeñas, secuenciales y síncronas. Necesita latencia muy baja y estable.</li>
+      <li><b>Archivos de datos</b>: lecturas aleatorias en OLTP, secuenciales en analítica y respaldos.</li>
+      <li><b>Alta disponibilidad</b>: réplica de la base en otro servidor (en Oracle, Data Guard) o clúster activo-activo (Oracle RAC, <i>Real Application Clusters</i>). Cada opción duplica parte del cómputo y, en el caso de la réplica, también del almacenamiento.</li>
+      <li><b>Fuente de datos para el sizing</b>: en Oracle, los reportes AWR (<i>Automatic Workload Repository</i>) de la hora pico muestran CPU, lecturas y escrituras físicas por segundo, volumen de redo y eventos de espera.</li>
+    </ul>
+  </div>
+
+  <h3>5.4 ERP, virtualización y backup</h3>
+  <div class="prose">
+    <h4>ERP</h4>
+    <p>En SAP, la capacidad de cómputo se expresa en <b>SAPS</b> (<i>SAP Application Performance Standard</i>), una unidad derivada de los benchmarks estándar de SAP; SAP publica además una métrica avanzada (aSAPS). El requerimiento del cliente se obtiene con las herramientas de sizing de SAP y el fabricante lo traduce a un servidor concreto. Para SAP HANA, el factor dominante es la memoria, porque la base de datos reside en RAM.</p>
+    <h4>Virtualización</h4>
+    <ul>
+      <li>Sumar la demanda real (no la asignada) de todas las VM en pico.</li>
+      <li>Fijar una relación vCPU:núcleo físico aceptable según la criticidad.</li>
+      <li>Diseñar con <b>N+1</b>: si un host falla, los demás deben absorber sus VM.</li>
+      <li>Sumar la capacidad de los datastores y sus IOPS, que ahora se concentran en un solo arreglo.</li>
+    </ul>
+    <h4>Backup</h4>
+    <div class="formula">Throughput requerido = datos a respaldar ÷ ventana de respaldo
+
+Ejemplo: 20 TB en una ventana de 8 h
+20 000 000 MB ÷ 28 800 s ≈ 694 MB/s ≈ 5,6 Gb/s
+→ 1 enlace de 10 GbE queda al límite; conviene 2 × 25 GbE o respaldo por SAN</div>
+    <p>Además del throughput, el backup dimensiona capacidad: tamaño del respaldo completo, tasa de cambio diaria, número de copias retenidas y reducción de datos esperada (medida, no supuesta).</p>
+  </div>
+
+  <h3>5.5 Método de sizing</h3>
+  <div class="prose">
+    <ol>
+      <li><b>Inventario</b>: qué existe hoy (servidores, VM/LPAR, capacidad, red, SAN).</li>
+      <li><b>Medición en pico</b>: CPU, memoria, IOPS, throughput, latencia, tráfico de red. Idealmente un mes que incluya un cierre.</li>
+      <li><b>Normalización</b>: convertir la medición a la plataforma propuesta con métricas oficiales (rPerf/CPW en Power, SAPS en SAP, fichas de rendimiento del fabricante).</li>
+      <li><b>Crecimiento</b>: aplicar la tasa anual al horizonte del proyecto.</li>
+      <li><b>Utilización objetivo</b>: dejar margen, por ejemplo planear al 70 % del recurso en pico.</li>
+      <li><b>Alta disponibilidad y DR</b>: duplicar o reservar lo necesario para operar con un componente o un sitio caído.</li>
+      <li><b>Validación con herramientas oficiales</b>: IBM Storage Modeller para almacenamiento, configuradores de IBM para servidores.</li>
+      <li><b>Supuestos por escrito</b>: todo dato que no venga del cliente se documenta como supuesto en la propuesta.</li>
+    </ol>
+    <div class="formula">Requerido = pico medido × (1 + crecimiento anual)^años ÷ utilización objetivo
+
+Ejemplo: 12 núcleos en pico, 20 % anual, 3 años, objetivo 70 %
+12 × 1,2³ ÷ 0,70 = 12 × 1,728 ÷ 0,70 ≈ 29,6 → 30 núcleos (de la misma generación)</div>
+  </div>
+
+  <h3>5.6 Hoja de levantamiento de requerimientos</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Bloque</th><th>Dato</th><th>Fuente habitual</th></tr></thead>
+    <tbody>
+      <tr><td>Negocio</td><td>Aplicación, usuarios concurrentes, horarios críticos, crecimiento esperado, horizonte</td><td>Entrevista con el cliente</td></tr>
+      <tr><td>Cómputo</td><td>Modelo de servidor actual, núcleos, uso pico, memoria asignada y usada</td><td>HMC Scanner, nmon, herramientas de inventario del hipervisor</td></tr>
+      <tr><td>Base de datos</td><td>Versión, edición, tamaño, IOPS de lectura y escritura, redo por segundo</td><td>Reportes AWR o equivalentes</td></tr>
+      <tr><td>Storage</td><td>Capacidad usada y asignada, IOPS, throughput y latencia en pico, tamaño de bloque</td><td>Herramienta del arreglo, iostat</td></tr>
+      <tr><td>Red</td><td>Puertos por servidor, velocidades, VLAN, MTU, tráfico pico</td><td>Equipo de redes del cliente</td></tr>
+      <tr><td>SAN</td><td>Fabrics, modelo de switches, puertos libres con licencia, velocidad</td><td>Equipo de storage del cliente</td></tr>
+      <tr><td>Continuidad</td><td>RPO, RTO, sitio alterno, distancia, ventana de backup, retención</td><td>Entrevista y políticas del cliente</td></tr>
+      <tr><td>Licencias</td><td>Software que se licencia por núcleo y sus reglas de virtualización</td><td>Área de compras o contratos del cliente</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>5.7 Aplicación en preventa</h3>
+  <div class="prose">
+    <h4>Qué preguntar al cliente</h4>
+    <ul>
+      <li>¿Cuál es el proceso de negocio más crítico y qué tiempo de respuesta espera el usuario?</li>
+      <li>¿Cuándo ocurre el pico (hora, día, cierre de mes) y qué procesos batch corren de noche?</li>
+      <li>¿La aplicación está certificada en la plataforma y versión que vamos a proponer?</li>
+      <li>¿Qué pasa con el negocio si el sistema se detiene una hora? Esto define RTO y el presupuesto razonable de alta disponibilidad.</li>
+    </ul>
+    <h4>Errores comunes</h4>
+    <ul>
+      <li>Dimensionar cada área por separado sin revisar que el conjunto sea coherente (por ejemplo, un arreglo muy rápido detrás de una SAN o de HBA saturados).</li>
+      <li>Usar datos de un periodo sin carga.</li>
+      <li>Olvidar ambientes no productivos (desarrollo, pruebas, QA) que también consumen recursos.</li>
+      <li>No documentar supuestos; si el cliente cambia un dato, nadie sabe qué recalcular.</li>
+    </ul>
+  </div>
+
+  <h3>5.8 Autoevaluación</h3>
+  <div class="prose quiz">
+    <ol>
+      <li>¿Por qué una BD OLTP es más sensible a la latencia que una analítica?</li>
+      <li>En la Fig. 12, ¿qué pasos dependen de la SAN y el almacenamiento?</li>
+      <li>¿Cómo puede más memoria reducir las IOPS que necesita una base de datos?</li>
+      <li>Calcula el throughput necesario para respaldar 12 TB en 6 horas.</li>
+      <li>Un cliente usa 40 vCPU de 64 asignadas en pico, crece 15 % anual y el horizonte es 3 años con objetivo de 70 %. ¿Cuántos núcleos equivalentes de la misma generación necesita (1 vCPU = 1 núcleo para simplificar)?</li>
+      <li>¿Qué significa diseñar con N+1 en un clúster de virtualización?</li>
+    </ol>
+    <details class="ans"><summary>Respuestas</summary><div><ol>
+      <li>Porque cada transacción espera una escritura síncrona del log y lecturas aleatorias pequeñas; cualquier milisegundo extra se multiplica por miles de transacciones. La analítica depende más del volumen de datos movido por segundo.</li>
+      <li>Los pasos 4, 5 y 6 (y una lectura física en el paso 3 cuando el dato no está en memoria).</li>
+      <li>Una caché de datos más grande permite encontrar más bloques en RAM, así que se hacen menos lecturas físicas al almacenamiento.</li>
+      <li>12 000 000 MB ÷ 21 600 s ≈ 556 MB/s ≈ 4,4 Gb/s.</li>
+      <li>40 × 1,15³ ÷ 0,70 = 40 × 1,521 ÷ 0,70 ≈ 86,9 → 87 núcleos. Se usa lo consumido (40), no lo asignado (64).</li>
+      <li>Que el clúster tiene capacidad para seguir operando todas sus VM si falla un host completo.</li>
+    </ol></div></details>
+  </div>
+
+  <h3>5.9 Lecturas recomendadas</h3>
+  <ul class="reads">
+    <li><span class="src">IBM</span><a href="https://www.ibm.com/tools/storage-modeller/help/WWR2/5528_intro.IBM_Storage_Modeller.html">IBM Storage Modeller: ayuda en línea</a>: introducción y modelado de Storage Virtualize.</li>
+    <li><span class="src">SAP</span><a href="https://www.sap.com/about/benchmark/measuring.html">Measuring in SAPS / aSAPS</a> y <a href="https://www.sap.com/about/benchmark/sizing/decision-tree.html">General Hardware Sizing Decision Tree</a>.</li>
+    <li><span class="src">IBM Redbooks</span><a href="https://www.redbooks.ibm.com/abstracts/sg248587.html">IBM Power E1180: Introduction and Overview</a>: capítulo de soluciones y cargas de trabajo.</li>
+  </ul>
+</section>
+
+<section class="area" id="s6">
+  <div class="eyebrow"><b>Semana 6</b><span>lun 23 – dom 29 nov 2026</span><span>Integración</span></div>
+  <h2>Repaso general y caso práctico integrador</h2>
+
+  <div class="plan">
+    <div><h4>Temas</h4><ul><li>Repaso de las cinco áreas</li><li>Caso: base de datos Oracle crítica</li><li>Justificación de decisiones</li></ul></div>
+    <div><h4>Actividades</h4><ul><li>Repaso (2 h): redibujar de memoria las Fig. 0, 6, 10 y 12, y rehacer las autoevaluaciones con peor resultado</li><li>Caso (4 h): resolver los seis pasos antes de leer la solución</li><li>Comparar tu resultado con la solución y anotar diferencias</li></ul></div>
+    <div><h4>Entregable</h4><p>Propuesta técnica de una página: tabla de requerimientos, decisiones con justificación, diagrama de arquitectura (Fig. 13 hecho por ti) y lista de supuestos.</p></div>
+  </div>
+
+  <h3>6.1 Escenario del cliente</h3>
+  <div class="prose">
+    <p><b>Distribuidora Altiplano</b> (empresa ficticia) opera su ERP propio sobre Oracle Database 19c Enterprise Edition. Sus servidores x86 son de 2018 y salen de soporte. Pide una propuesta para los próximos 3 años. Datos levantados:</p>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Dato</th><th>Valor</th><th>Fuente</th></tr></thead>
+    <tbody>
+      <tr><td>Usuarios concurrentes en pico</td><td>900</td><td>Cliente</td></tr>
+      <tr><td>Núcleos usados por la BD en pico</td><td class="mono">18 (x86, 2018)</td><td>nmon / AWR</td></tr>
+      <tr><td>Memoria usada por la BD (SGA + PGA)</td><td class="mono">384 GB</td><td>AWR</td></tr>
+      <tr><td>Tamaño de la base de datos</td><td class="mono">8 TB</td><td>Cliente</td></tr>
+      <tr><td>Crecimiento anual</td><td class="mono">25 %</td><td>Histórico de 2 años</td></tr>
+      <tr><td>IOPS en pico (OLTP)</td><td class="mono">40 000 · 70 % lectura · 8 KiB</td><td>AWR + arreglo actual</td></tr>
+      <tr><td>Proceso batch de cierre</td><td class="mono">1,2 GB/s secuencial durante 2 h</td><td>Arreglo actual</td></tr>
+      <tr><td>Latencia objetivo</td><td class="mono">&lt; 1 ms en lecturas; espera de commit &lt; 2 ms</td><td>Cliente</td></tr>
+      <tr><td>Continuidad</td><td class="mono">RPO 15 min, RTO 4 h; sitio alterno a 300 km</td><td>Política del cliente</td></tr>
+      <tr><td>Respaldo</td><td class="mono">Completo semanal en ventana de 6 h</td><td>Cliente</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>6.2 Paso 1 · Cómputo</h3>
+  <div class="prose">
+    <div class="formula">Núcleos a 3 años (misma generación) = 18 × 1,25³ ÷ 0,70
+                                    = 18 × 1,953 ÷ 0,70 ≈ 50,2 núcleos equivalentes 2018</div>
+    <p>Para traducir esos 50 núcleos “de 2018” a núcleos Power11 se necesita la relación de rendimiento por núcleo entre ambos equipos, obtenida de métricas oficiales (rPerf del modelo propuesto y una referencia comparable del equipo actual) o de una prueba. <b>Para practicar, supón una relación de 2,0</b> (valor hipotético, no es un dato oficial): 50,2 ÷ 2,0 ≈ 25 núcleos activos para la LPAR de producción.</p>
+    <p>Memoria: 384 GB × 1,953 ≈ 750 GB; se proponen 768 GB para la LPAR de base de datos, más la memoria de VIOS, hipervisor y las LPAR de aplicación.</p>
+    <p><b>Decisión</b>: dos servidores IBM Power de la misma familia. El servidor 1 aloja producción; el servidor 2 aloja la réplica Oracle Data Guard y los ambientes de pruebas, y tiene capacidad (activable por CoD) para correr producción si el servidor 1 falla. Cada servidor con dos VIOS.</p>
+  </div>
+
+  <h3>6.3 Paso 2 · Red LAN</h3>
+  <div class="prose"><p><b>Decisión</b>: conectar cada VIOS con dos puertos de 25 GbE, uno a cada leaf del cliente (par MLAG). Separar el tráfico en VLAN:</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th class="num">VLAN</th><th>Nombre</th><th>Subred</th><th>Gateway</th><th class="num">Hosts útiles</th><th>Uso</th></tr></thead>
+    <tbody>
+      <tr><td class="num">110</td><td>Producción</td><td class="mono">10.10.110.0/24</td><td class="mono">10.10.110.1</td><td class="num">254</td><td>Usuarios ↔ aplicación ↔ BD</td></tr>
+      <tr><td class="num">120</td><td>Respaldo</td><td class="mono">10.10.120.0/26</td><td class="mono">10.10.120.1</td><td class="num">62</td><td>RMAN hacia el servidor de respaldo</td></tr>
+      <tr><td class="num">130</td><td>Gestión</td><td class="mono">10.10.130.0/26</td><td class="mono">10.10.130.1</td><td class="num">62</td><td>HMC, procesadores de servicio, controladoras, switches</td></tr>
+      <tr><td class="num">140</td><td>Data Guard</td><td class="mono">10.10.140.0/27</td><td class="mono">10.10.140.1</td><td class="num">30</td><td>Transporte de redo entre servidores</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>6.4 Paso 3 · Almacenamiento</h3>
+  <div class="prose">
+    <div class="formula">Datos a 3 años            = 8 TB × 1,953                  = 15,6 TB
++ redo, archive, temp, undo (20 %)                        =  3,1 TB
++ snapshots y copias para pruebas (20 % de datos)         =  3,1 TB
+Subtotal                                                  = 21,9 TB
+Con 15 % libre de reserva: 21,9 ÷ 0,85                    ≈ 25,7 → 26 TB útiles
+
+IOPS a 3 años      = 40 000 × 1,953 ≈ 78 100 IOPS (70/30, 8 KiB)
+Throughput OLTP    = 78 100 × 8 KiB ≈ 640 MB/s
+Batch de cierre    = 1,2 GB/s × 1,953 ≈ 2,34 GB/s secuencial</div>
+    <p><b>Decisión</b>: un IBM FlashSystem con dos controladoras, módulos FCM y DRAID 6, dimensionado para 26 TB útiles <b>sin contar reducción de datos</b> (si la base usa compresión de Oracle, el arreglo reducirá poco). La configuración exacta y la verificación de latencia se hacen en IBM Storage Modeller con este perfil de carga. Un segundo FlashSystem en el sitio alterno recibe replicación <b>asíncrona</b>: a 300 km la replicación síncrona sumaría varios milisegundos a cada commit y no cumpliría la espera de commit menor a 2 ms; la asíncrona cumple el RPO de 15 minutos.</p>
+  </div>
+
+  <h3>6.5 Paso 4 · Red SAN</h3>
+  <div class="prose">
+    <div class="formula">Puertos por fabric:
+  Servidores: 2 servidores × 2 VIOS × 1 puerto        = 4
+  FlashSystem: 2 controladoras × 2 puertos            = 4
+  Respaldo / cinta                                     = 1
+  Subtotal 9 + 30 % de crecimiento ≈ 12 puertos licenciados por switch
+
+Ancho de banda por servidor con un fabric caído:
+  2 puertos 32GFC × ≈3 200 MB/s por sentido ≈ 6,4 GB/s  >  2,34 GB/s del batch</div>
+    <p><b>Decisión</b>: dos switches FC independientes (fabric A y B) de 32GFC o 64GFC según lo que ya tenga el cliente; de 24 puertos con al menos 12 a 16 licenciados. Zoning por WWPN de iniciador único: cada puerto virtual (NPIV) de las LPAR se zonifica con un puerto de cada controladora en su fabric, lo que da 4 rutas por volumen. AIX usa MPIO. Validar versiones de AIX, VIOS, HBA y FlashSystem en SSIC.</p>
+  </div>
+
+  <h3>6.6 Paso 5 · Respaldo y paso 6 · Revisión de coherencia</h3>
+  <div class="prose">
+    <div class="formula">Respaldo completo a 3 años: 15,6 TB ÷ 6 h
+  15 600 000 MB ÷ 21 600 s ≈ 722 MB/s ≈ 5,8 Gb/s → VLAN 120 con 2 × 25 GbE</div>
+    <p>Revisión de coherencia: el batch de 2,34 GB/s cabe en la SAN aun con un fabric caído; el respaldo de 5,8 Gb/s cabe en los enlaces de 25 GbE sin tocar la VLAN de producción; el arreglo se valida en StorM para 78 100 IOPS con latencia menor a 1 ms; y el servidor 2 puede absorber producción. Ningún componente queda como cuello de botella ni como punto único de falla.</p>
+  </div>
+
+  <figure class="dg">
+    <div class="fig-t"><span>FIG. 13</span>Arquitectura propuesta para Distribuidora Altiplano</div>
+    <div class="svgwrap">
+    <svg class="d" viewBox="0 0 880 600" role="img" aria-label="Arquitectura completa: usuarios, leaves, dos servidores Power, dos fabrics SAN, FlashSystem y sitio alterno">
+      <rect class="bw" x="20" y="10" width="240" height="44" rx="6"/><text class="c h" x="140" y="30">Servidor de respaldo</text><text class="c m" x="140" y="46">RMAN · VLAN 120</text>
+      <rect class="bw" x="330" y="10" width="220" height="44" rx="6"/><text class="c h" x="440" y="30">Usuarios / WAN</text><text class="c m" x="440" y="46">VLAN 110</text>
+      <rect class="bw" x="680" y="10" width="180" height="44" rx="6"/><text class="c h" x="770" y="30">HMC</text><text class="c m" x="770" y="46">gestión · VLAN 130</text>
+      <path class="lE" d="M410,54 L290,100 M470,54 L590,100 M140,54 L240,100 M200,54 L540,100"/>
+      <path class="ln dash" d="M770,54 V200"/>
+      <rect class="bE" x="190" y="100" width="200" height="44" rx="6"/><text class="c h" x="290" y="127">Leaf A · 25 GbE</text>
+      <rect class="bE" x="490" y="100" width="200" height="44" rx="6"/><text class="c h" x="590" y="127">Leaf B · 25 GbE</text>
+      <path class="ln dash" d="M390,122 H490"/><text class="c m" x="440" y="114">MLAG</text>
+      <path class="lE" d="M240,144 L180,200 M340,144 L560,200 M540,144 L330,200 M640,144 L700,200"/>
+      <text class="c m halo" x="440" y="182">VLAN 110 · 120 · 130 · 140</text>
+
+      <rect class="frame" x="40" y="200" width="380" height="160" rx="10"/><text class="h" x="54" y="222">Servidor Power 1 · producción</text>
+      <rect class="ba" x="55" y="240" width="170" height="44" rx="5"/><text class="c" x="140" y="267">LPAR Oracle prod</text>
+      <rect class="ba" x="235" y="240" width="170" height="44" rx="5"/><text class="c" x="320" y="267">LPAR aplicación</text>
+      <rect class="b" x="55" y="300" width="170" height="44" rx="5"/><text class="c" x="140" y="327">VIOS 1</text>
+      <rect class="b" x="235" y="300" width="170" height="44" rx="5"/><text class="c" x="320" y="327">VIOS 2</text>
+      <rect class="frame" x="460" y="200" width="380" height="160" rx="10"/><text class="h" x="474" y="222">Servidor Power 2 · standby y pruebas</text>
+      <rect class="ba" x="475" y="240" width="170" height="44" rx="5"/><text class="c" x="560" y="267">Standby Data Guard</text>
+      <rect class="ba" x="655" y="240" width="170" height="44" rx="5"/><text class="c" x="740" y="267">LPAR pruebas</text>
+      <rect class="b" x="475" y="300" width="170" height="44" rx="5"/><text class="c" x="560" y="327">VIOS 1</text>
+      <rect class="b" x="655" y="300" width="170" height="44" rx="5"/><text class="c" x="740" y="327">VIOS 2</text>
+
+      <path class="lA" d="M140,344 L180,420 M560,344 L300,420"/>
+      <path class="lB" d="M320,344 L600,420 M740,344 L700,420"/>
+      <rect class="bA" x="100" y="420" width="260" height="46" rx="6"/><text class="c h" x="230" y="441">Switch FC · Fabric A</text><text class="c m" x="230" y="457">32/64GFC · zoning WWPN</text>
+      <rect class="bB" x="520" y="420" width="260" height="46" rx="6"/><text class="c h" x="650" y="441">Switch FC · Fabric B</text><text class="c m" x="650" y="457">32/64GFC · zoning WWPN</text>
+      <path class="lA" d="M200,466 L320,520 M300,466 L420,520"/>
+      <path class="lB" d="M580,466 L460,520 M680,466 L560,520"/>
+      <rect class="bw" x="240" y="520" width="400" height="66" rx="8"/><text class="c h" x="440" y="544">IBM FlashSystem · sitio principal</text><text class="c m" x="440" y="562">2 controladoras · FCM · DRAID 6 · 26 TB útiles</text><text class="c m" x="440" y="578">snapshots / Safeguarded Copy</text>
+      <rect class="bB" x="690" y="520" width="180" height="66" rx="8"/><text class="c h" x="780" y="544">Sitio alterno</text><text class="c m" x="780" y="562">FlashSystem réplica</text><text class="c m" x="780" y="578">asíncrona · 300 km</text>
+      <line class="ln dash" x1="640" y1="553" x2="686" y2="553" marker-end="url(#ar)"/>
+    </svg>
+    </div>
+    <figcaption>Cada capa tiene dos elementos y cada elemento se conecta a ambos elementos de la capa siguiente: dos leaves, dos servidores con dos VIOS, dos fabrics y dos controladoras. La copia al sitio alterno es asíncrona para no afectar la latencia de commit.</figcaption>
+  </figure>
+
+  <h3>6.7 Justificación de decisiones</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Decisión</th><th>Alternativa descartada</th><th>Por qué</th></tr></thead>
+    <tbody>
+      <tr><td>Dos servidores Power con dos VIOS cada uno</td><td>Un solo servidor grande</td><td>Un servidor sería punto único de falla; el segundo aloja la réplica y pruebas, así que no queda ocioso.</td></tr>
+      <tr><td>Núcleos calculados por rendimiento normalizado</td><td>Copiar el número de núcleos actual</td><td>Generaciones y arquitecturas distintas rinden diferente por núcleo; con licenciamiento por núcleo, sobredimensionar cuesta en licencias.</td></tr>
+      <tr><td>VLAN separadas para respaldo y Data Guard</td><td>Todo en la VLAN de producción</td><td>El respaldo de 5,8 Gb/s afectaría la latencia de los usuarios.</td></tr>
+      <tr><td>Arreglo flash con DRAID 6</td><td>RAID 5 o arreglo híbrido</td><td>Doble protección y reconstrucción rápida; latencia menor a 1 ms para OLTP.</td></tr>
+      <tr><td>Capacidad sin reducción de datos</td><td>Suponer 2:1</td><td>Una base con compresión propia reduce poco; prometer 2:1 dejaría al cliente sin espacio.</td></tr>
+      <tr><td>Fabric A/B independientes, 4 rutas por volumen</td><td>Un switch o fabrics unidos por ISL</td><td>Elimina el punto único de falla y aísla errores de configuración.</td></tr>
+      <tr><td>Replicación asíncrona al sitio alterno</td><td>Replicación síncrona</td><td>A 300 km la síncrona penaliza cada commit; la asíncrona cumple el RPO de 15 min.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>6.8 Supuestos que deben aparecer en la propuesta</h3>
+  <div class="prose">
+    <ul>
+      <li>Relación de rendimiento por núcleo entre equipos (aquí hipotética: 2,0) pendiente de validar con métricas oficiales.</li>
+      <li>Crecimiento de 25 % anual aplicado por igual a datos, IOPS y CPU.</li>
+      <li>Capacidad de los switches leaf y de la WAN al sitio alterno a cargo del cliente.</li>
+      <li>Licencias de Oracle a cargo del cliente, calculadas según las reglas vigentes de Oracle para la plataforma.</li>
+      <li>Servidores del sitio alterno fuera del alcance de esta fase.</li>
+    </ul>
+  </div>
+
+  <h3>6.9 Autoevaluación integradora</h3>
+  <div class="prose quiz">
+    <ol>
+      <li>Si el cliente exige RPO = 0 con el sitio alterno a 300 km, ¿qué le explicarías?</li>
+      <li>¿Qué cambiaría en la SAN si el cliente decide usar iSCSI en lugar de FC?</li>
+      <li>¿Qué pasa con la capacidad si el cliente sube su crecimiento a 35 % anual?</li>
+      <li>¿Qué componente revisarías primero si la espera de commit sube a 5 ms?</li>
+      <li>¿Por qué el servidor 2 debe poder correr producción?</li>
+    </ol>
+    <details class="ans"><summary>Respuestas</summary><div><ol>
+      <li>Que RPO = 0 exige replicación síncrona y a esa distancia cada commit esperaría el viaje de ida y vuelta, lo que rompe el objetivo de latencia. Alternativas: replicación síncrona a un sitio cercano más asíncrona al lejano, o aceptar un RPO de minutos.</li>
+      <li>Se reemplazan switches y HBA FC por puertos Ethernet dedicados en VLAN o switches propios para iSCSI, con dos rutas físicas, MTU coherente y multipathing; la latencia sería menos predecible y habría que validar soporte en SSIC.</li>
+      <li>1,35³ ≈ 2,46: datos 8 × 2,46 ≈ 19,7 TB; con los mismos porcentajes, 19,7 × 1,4 ÷ 0,85 ≈ 32,4 TB útiles.</li>
+      <li>La latencia de escritura del arreglo y de la SAN (pasos 4 a 6 de la Fig. 12): rutas caídas, puertos saturados o un arreglo al límite.</li>
+      <li>Porque es la protección local ante falla del servidor 1; si no puede con la carga, el RTO de 4 h dependería de reparar el hardware.</li>
+    </ol></div></details>
+  </div>
+</section>
+
+<section class="area" id="glosario">
+  <div class="eyebrow"><b>Referencia</b><span>Términos y siglas</span></div>
+  <h2>Glosario</h2>
+  <dl class="glos">
+    <dt>ALUA</dt><dd><i>Asymmetric Logical Unit Access</i>. El arreglo indica al servidor qué rutas a un volumen son preferidas.</dd>
+    <dt>ARP</dt><dd><i>Address Resolution Protocol</i>. Obtiene la dirección MAC que corresponde a una IP dentro de la subred.</dd>
+    <dt>AWR</dt><dd><i>Automatic Workload Repository</i>. Repositorio y reportes de rendimiento de Oracle Database.</dd>
+    <dt>BGP</dt><dd><i>Border Gateway Protocol</i>. Protocolo de routing entre organizaciones y en fabrics de centro de datos.</dd>
+    <dt>BMC</dt><dd><i>Baseboard Management Controller</i>. Procesador de gestión fuera de banda del servidor.</dd>
+    <dt>Bloque</dt><dd>Acceso a almacenamiento por bloques numerados; el servidor organiza el contenido.</dd>
+    <dt>CIDR</dt><dd><i>Classless Inter-Domain Routing</i>. Notación de red con prefijo, por ejemplo /24.</dd>
+    <dt>CoD</dt><dd><i>Capacity on Demand</i>. En IBM Power, núcleos o memoria instalados que se activan con licencia.</dd>
+    <dt>CPU</dt><dd><i>Central Processing Unit</i>. Procesador; contiene núcleos.</dd>
+    <dt>DAS</dt><dd><i>Direct-Attached Storage</i>. Discos conectados directamente a un servidor.</dd>
+    <dt>DIMM</dt><dd><i>Dual Inline Memory Module</i>. Módulo de memoria RAM.</dd>
+    <dt>DRAID</dt><dd>RAID distribuido de IBM Storage Virtualize: reparte datos, paridad y repuesto entre todos los discos.</dd>
+    <dt>Deduplicación</dt><dd>Guardar una sola vez los bloques idénticos.</dd>
+    <dt>Easy Tier</dt><dd>Función de IBM Storage Virtualize que mueve datos entre tiers según su actividad.</dd>
+    <dt>ECMP</dt><dd><i>Equal-Cost Multi-Path</i>. Reparto de tráfico entre rutas de igual costo.</dd>
+    <dt>Fabric</dt><dd>Conjunto de switches FC interconectados que comparten servicios de nombres y zoning.</dd>
+    <dt>FC</dt><dd>Fibre Channel. Red dedicada para almacenamiento.</dd>
+    <dt>FCM</dt><dd>IBM FlashCore Module. Módulo flash NVMe de IBM con compresión por hardware.</dd>
+    <dt>FlashCopy</dt><dd>Función de snapshot y copia instantánea de IBM Storage Virtualize.</dd>
+    <dt>FSP</dt><dd><i>Flexible Service Processor</i>. Procesador de servicio en servidores IBM Power.</dd>
+    <dt>Gateway</dt><dd>Puerta de enlace: router al que se envía el tráfico destinado a otras subredes.</dd>
+    <dt>HBA</dt><dd><i>Host Bus Adapter</i>. Tarjeta del servidor para conectarse a la SAN FC.</dd>
+    <dt>HDD</dt><dd><i>Hard Disk Drive</i>. Disco mecánico.</dd>
+    <dt>Hipervisor</dt><dd>Software que crea y ejecuta máquinas virtuales.</dd>
+    <dt>HMC</dt><dd><i>Hardware Management Console</i>. Consola de gestión de servidores IBM Power.</dd>
+    <dt>IOPS</dt><dd><i>Input/Output Operations Per Second</i>. Operaciones de E/S por segundo.</dd>
+    <dt>IQN</dt><dd><i>iSCSI Qualified Name</i>. Identificador de iniciadores y destinos iSCSI.</dd>
+    <dt>iSCSI</dt><dd><i>Internet Small Computer Systems Interface</i>. Comandos SCSI sobre TCP/IP.</dd>
+    <dt>ISL</dt><dd><i>Inter-Switch Link</i>. Enlace entre switches del mismo fabric.</dd>
+    <dt>LACP</dt><dd><i>Link Aggregation Control Protocol</i>. Agrupa varios enlaces Ethernet en uno lógico.</dd>
+    <dt>Latencia</dt><dd>Tiempo que tarda una operación en completarse.</dd>
+    <dt>LPAR</dt><dd><i>Logical Partition</i>. Máquina virtual en IBM Power.</dd>
+    <dt>LPM</dt><dd><i>Live Partition Mobility</i>. Migración en vivo de LPAR entre servidores Power.</dd>
+    <dt>LUN</dt><dd><i>Logical Unit Number</i>. Identificador de un volumen de bloque; por extensión, el volumen.</dd>
+    <dt>LUN masking</dt><dd>Control en el arreglo de qué volúmenes ve cada servidor.</dd>
+    <dt>MAC</dt><dd><i>Media Access Control</i>. Dirección física de 48 bits de una interfaz de red.</dd>
+    <dt>MLAG</dt><dd><i>Multi-Chassis Link Aggregation</i>. Agregación de enlaces que termina en dos switches.</dd>
+    <dt>MPIO</dt><dd><i>Multiple Path I/O</i>. Multipathing nativo de AIX.</dd>
+    <dt>MTU</dt><dd><i>Maximum Transmission Unit</i>. Tamaño máximo de trama; 9000 bytes en jumbo frames.</dd>
+    <dt>NAS</dt><dd><i>Network-Attached Storage</i>. Almacenamiento de archivos por red IP.</dd>
+    <dt>NIC</dt><dd><i>Network Interface Card</i>. Tarjeta de red Ethernet.</dd>
+    <dt>NPIV</dt><dd><i>N_Port ID Virtualization</i>. Permite que un puerto FC físico presente varios WWPN virtuales.</dd>
+    <dt>NUMA</dt><dd><i>Non-Uniform Memory Access</i>. Memoria local de cada socket más rápida que la remota.</dd>
+    <dt>NVMe</dt><dd><i>Non-Volatile Memory Express</i>. Protocolo para flash con múltiples colas paralelas.</dd>
+    <dt>NVMe-oF</dt><dd><i>NVMe over Fabrics</i>. NVMe sobre FC, RDMA o TCP.</dd>
+    <dt>OLAP / OLTP</dt><dd>Procesamiento analítico / transaccional en línea.</dd>
+    <dt>OSI</dt><dd><i>Open Systems Interconnection</i>. Modelo de referencia de 7 capas.</dd>
+    <dt>PCIe</dt><dd><i>Peripheral Component Interconnect Express</i>. Bus de expansión para adaptadores.</dd>
+    <dt>PowerVM</dt><dd>Hipervisor de IBM Power, integrado en el firmware.</dd>
+    <dt>RAID</dt><dd><i>Redundant Array of Independent Disks</i>. Combinación de discos para protección y rendimiento.</dd>
+    <dt>RPO / RTO</dt><dd>Pérdida de datos máxima aceptable / tiempo máximo para recuperar el servicio.</dd>
+    <dt>rPerf / CPW</dt><dd>Métricas relativas de rendimiento publicadas por IBM para Power (AIX/Linux e IBM i).</dd>
+    <dt>SAN</dt><dd><i>Storage Area Network</i>. Red dedicada que entrega volúmenes de bloque.</dd>
+    <dt>SAPS</dt><dd><i>SAP Application Performance Standard</i>. Unidad de capacidad derivada de los benchmarks de SAP.</dd>
+    <dt>SFP</dt><dd><i>Small Form-factor Pluggable</i>. Transceptor que se inserta en un puerto.</dd>
+    <dt>SMT</dt><dd><i>Simultaneous Multithreading</i>. Varios hilos por núcleo.</dd>
+    <dt>Snapshot</dt><dd>Copia instantánea de un volumen en un punto del tiempo.</dd>
+    <dt>Spine-leaf</dt><dd>Topología donde cada switch de acceso (leaf) conecta con todos los spines.</dd>
+    <dt>SSD</dt><dd><i>Solid-State Drive</i>. Unidad de almacenamiento flash.</dd>
+    <dt>SSIC</dt><dd><i>System Storage Interoperation Center</i>. Matriz de compatibilidad de IBM.</dd>
+    <dt>STP</dt><dd><i>Spanning Tree Protocol</i>. Evita bucles en redes de capa 2 bloqueando enlaces.</dd>
+    <dt>StorM</dt><dd>IBM Storage Modeller. Herramienta de IBM para dimensionar almacenamiento.</dd>
+    <dt>SVC</dt><dd>IBM SAN Volume Controller. Virtualiza arreglos de distintos fabricantes bajo IBM Storage Virtualize.</dd>
+    <dt>TCP/IP</dt><dd>Familia de protocolos de Internet; modelo de 4 capas.</dd>
+    <dt>Thin provisioning</dt><dd>Aprovisionamiento que consume capacidad física solo al escribir.</dd>
+    <dt>Throughput</dt><dd>Volumen de datos transferido por segundo.</dd>
+    <dt>Tier</dt><dd>Nivel de almacenamiento con rendimiento y costo similares.</dd>
+    <dt>VIOS</dt><dd><i>Virtual I/O Server</i>. Partición de IBM Power que comparte adaptadores físicos con las LPAR.</dd>
+    <dt>VLAN</dt><dd><i>Virtual LAN</i>. Segmento lógico aislado dentro de una red física (IEEE 802.1Q).</dd>
+    <dt>VM</dt><dd>Máquina virtual.</dd>
+    <dt>VRRP</dt><dd><i>Virtual Router Redundancy Protocol</i>. Gateway virtual redundante.</dd>
+    <dt>WWN / WWPN</dt><dd><i>World Wide Name / World Wide Port Name</i>. Identificador de 64 bits de un dispositivo o puerto FC.</dd>
+    <dt>Zoning</dt><dd>Definición en el switch FC de qué puertos pueden comunicarse.</dd>
+  </dl>
+</section>
+
+<section class="area" id="referencias">
+  <div class="eyebrow"><b>Fuentes</b><span>APA 7</span></div>
+  <h2>Referencias</h2>
+  <div class="note"><b>Notas de verificación.</b> Las cifras de RAID, Fibre Channel, Ethernet, VLAN e IPv4 provienen de las fuentes listadas. Quedan marcados en el texto como no respaldados por una fuente oficial única: la relación de rendimiento entre núcleos del caso integrador (hipotética), los perfiles orientativos de carga de la tabla 5.1 y los valores de latencia o IOPS por medio. Las referencias de Oracle y SAP son documentación oficial de esos fabricantes, fuera del ecosistema IBM.</div>
+  <ol class="refs">
+    <li>Braden, R. (Ed.). (1989). <i>Requirements for Internet hosts: Communication layers</i> (RFC 1122). Internet Engineering Task Force. <a href="https://www.rfc-editor.org/rfc/rfc1122">https://www.rfc-editor.org/rfc/rfc1122</a></li>
+    <li>Broadcom Inc. (2025, 19 de noviembre). <i>Broadcom introduces the world’s first quantum-safe Gen 8 128G SAN switch portfolio</i> [Comunicado de prensa]. <a href="https://investors.broadcom.com/news-releases/news-release-details/broadcom-introduces-worlds-first-quantum-safe-gen-8-128g-san">https://investors.broadcom.com/news-releases/news-release-details/broadcom-introduces-worlds-first-quantum-safe-gen-8-128g-san</a></li>
+    <li>Chadalapaka, M., Satran, J., Meth, K., &amp; Black, D. (2014). <i>Internet Small Computer System Interface (iSCSI) protocol (consolidated)</i> (RFC 7143). Internet Engineering Task Force. <a href="https://www.rfc-editor.org/rfc/rfc7143">https://www.rfc-editor.org/rfc/rfc7143</a></li>
+    <li>Cisco Systems. (s. f.). <i>Cisco data center spine-and-leaf architecture: Design overview</i> [White paper]. <a href="https://www.cisco.com/c/en/us/products/collateral/switches/nexus-7000-series-switches/white-paper-c11-737022.html">https://www.cisco.com/c/en/us/products/collateral/switches/nexus-7000-series-switches/white-paper-c11-737022.html</a></li>
+    <li>Deering, S., &amp; Hinden, R. (2017). <i>Internet Protocol, version 6 (IPv6) specification</i> (RFC 8200). Internet Engineering Task Force. <a href="https://www.rfc-editor.org/rfc/rfc8200">https://www.rfc-editor.org/rfc/rfc8200</a></li>
+    <li>Fibre Channel Industry Association. (2023). <i>Fibre Channel speedmap</i> (v24). <a href="https://fibrechannel.org/wp-content/uploads/2023/07/FCIA-Speedmap-V24-July-2023.pdf">https://fibrechannel.org/wp-content/uploads/2023/07/FCIA-Speedmap-V24-July-2023.pdf</a></li>
+    <li>Fuller, V., &amp; Li, T. (2006). <i>Classless Inter-domain Routing (CIDR): The Internet address assignment and aggregation plan</i> (RFC 4632). Internet Engineering Task Force. <a href="https://www.rfc-editor.org/rfc/rfc4632">https://www.rfc-editor.org/rfc/rfc4632</a></li>
+    <li>IBM Corporation. (2012). <i>IBM PowerVM best practices</i> (SG24-8062-00). IBM Redbooks. <a href="https://www.redbooks.ibm.com/abstracts/sg248062.html">https://www.redbooks.ibm.com/abstracts/sg248062.html</a></li>
+    <li>IBM Corporation. (2021a). <i>IBM FlashSystem best practices and performance guidelines</i> (SG24-8503-00). IBM Redbooks. <a href="https://redbooks.ibm.com/Redbooks.nsf/RedpieceAbstracts/sg248503.html?Open">https://redbooks.ibm.com/Redbooks.nsf/RedpieceAbstracts/sg248503.html?Open</a></li>
+    <li>IBM Corporation. (2021b). <i>IBM Power E1080 technical overview and introduction</i> (REDP-5649). IBM Redbooks. <a href="https://www.redbooks.ibm.com/abstracts/redp5649.html">https://www.redbooks.ibm.com/abstracts/redp5649.html</a></li>
+    <li>IBM Corporation. (2026). <i>The definitive guide to IBM Storage FlashSystem and AIX integration</i> (SG24-8604-01) [Borrador Redpiece]. IBM Redbooks. <a href="https://www.redbooks.ibm.com/redpieces/pdfs/sg248604.pdf">https://www.redbooks.ibm.com/redpieces/pdfs/sg248604.pdf</a></li>
+    <li>IBM Corporation. (s. f.-a). <i>IBM AIX MPIO best practices and considerations</i>. IBM Support. <a href="https://www.ibm.com/support/pages/ibm-aix-mpio-best-practices-and-considerations">https://www.ibm.com/support/pages/ibm-aix-mpio-best-practices-and-considerations</a></li>
+    <li>IBM Corporation. (s. f.-b). <i>IBM Storage Modeller</i> [Ayuda en línea]. <a href="https://www.ibm.com/tools/storage-modeller/help/WWR2/5528_intro.IBM_Storage_Modeller.html">https://www.ibm.com/tools/storage-modeller/help/WWR2/5528_intro.IBM_Storage_Modeller.html</a></li>
+    <li>IBM Corporation. (s. f.-c). Multiple Path I/O. En <i>AIX 7.3 documentation</i>. IBM Documentation. <a href="https://www.ibm.com/docs/en/aix/7.3.0?topic=management-multiple-path-io">https://www.ibm.com/docs/en/aix/7.3.0?topic=management-multiple-path-io</a></li>
+    <li>Institute of Electrical and Electronics Engineers. (2022). <i>IEEE standard for local and metropolitan area networks: Bridges and bridged networks</i> (IEEE Std 802.1Q-2022). <a href="https://standards.ieee.org/standard/802_1Q-2022.html">https://standards.ieee.org/standard/802_1Q-2022.html</a></li>
+    <li>Institute of Electrical and Electronics Engineers. (2024). <i>IEEE standard for Ethernet amendment 9: Media access control parameters for 800 Gb/s and physical layers and management parameters for 400 Gb/s and 800 Gb/s operation</i> (IEEE Std 802.3df-2024). <a href="https://standards.ieee.org/ieee/802.3df/11107/">https://standards.ieee.org/ieee/802.3df/11107/</a></li>
+    <li>International Organization for Standardization. (1994). <i>Information technology: Open Systems Interconnection. Basic reference model: The basic model</i> (ISO/IEC 7498-1:1994). <a href="https://www.iso.org/standard/20269.html">https://www.iso.org/standard/20269.html</a></li>
+    <li>Nadas, S. (Ed.). (2010). <i>Virtual Router Redundancy Protocol (VRRP) version 3 for IPv4 and IPv6</i> (RFC 5798). Internet Engineering Task Force. <a href="https://www.rfc-editor.org/rfc/rfc5798">https://www.rfc-editor.org/rfc/rfc5798</a></li>
+    <li>NVM Express, Inc. (s. f.). <i>NVMe over Fabrics (oF) specification</i>. <a href="https://nvmexpress.org/specification/nvme-of-specification/">https://nvmexpress.org/specification/nvme-of-specification/</a></li>
+    <li>Oracle Corporation. (s. f.). <i>Oracle processor core factor table</i>. <a href="https://www.oracle.com/contracts/docs/processor-core-factor-table-070634.pdf">https://www.oracle.com/contracts/docs/processor-core-factor-table-070634.pdf</a></li>
+    <li>Postel, J. (1981). <i>Internet Protocol</i> (RFC 791). Internet Engineering Task Force. <a href="https://www.rfc-editor.org/rfc/rfc791">https://www.rfc-editor.org/rfc/rfc791</a></li>
+    <li>Rekhter, Y., Moskowitz, B., Karrenberg, D., de Groot, G. J., &amp; Lear, E. (1996). <i>Address allocation for private internets</i> (RFC 1918). Internet Engineering Task Force. <a href="https://www.rfc-editor.org/rfc/rfc1918">https://www.rfc-editor.org/rfc/rfc1918</a></li>
+    <li>SAP SE. (s. f.-a). <i>General hardware sizing decision tree</i>. <a href="https://www.sap.com/about/benchmark/sizing/decision-tree.html">https://www.sap.com/about/benchmark/sizing/decision-tree.html</a></li>
+    <li>SAP SE. (s. f.-b). <i>Measuring in advanced SAP Application Performance Standard (aSAPS)</i>. <a href="https://www.sap.com/about/benchmark/measuring.html">https://www.sap.com/about/benchmark/measuring.html</a></li>
+    <li>Simon, T., Vo, H., Antonov, J., Bozhinov, I., Chauhan, R., Chirea, N., Genc, T., Grabowski, B., Klyachkin, A., &amp; Spasov, T. (2025). <i>IBM Power E1180: Introduction and overview</i> (SG24-8587-00). IBM Redbooks. <a href="https://www.redbooks.ibm.com/abstracts/sg248587.html">https://www.redbooks.ibm.com/abstracts/sg248587.html</a></li>
+    <li>Storage Networking Industry Association. (s. f.-a). RAID 6. En <i>SNIA online dictionary</i>. <a href="https://www.snia.org/education/online-dictionary/term/raid-6">https://www.snia.org/education/online-dictionary/term/raid-6</a></li>
+    <li>Storage Networking Industry Association. (s. f.-b). <i>SNIA online dictionary</i>. <a href="https://www.snia.org/education/online-dictionary">https://www.snia.org/education/online-dictionary</a></li>
+    <li>Tate, J., Beck, P., Ibarra, H. H., Kumaravel, S., &amp; Miklas, L. (2017). <i>Introduction to storage area networks</i> (SG24-5470-08). IBM Redbooks. <a href="https://www.redbooks.ibm.com/abstracts/sg245470.html">https://www.redbooks.ibm.com/abstracts/sg245470.html</a></li>
+  </ol>
+</section>
+</main>
+</div>
+
+</body></html>
